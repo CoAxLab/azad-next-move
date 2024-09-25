@@ -447,8 +447,17 @@ def wythoff_stumbler(num_episodes=10,
             if not done:
                 # OPPONENT CHOOSES A MOVE
                 if use_fixed_opponent:
-                    # TODO: change from fixed random to fixed difficulty
-                    move_i = np.random.randint(0, len(available))
+                    # calculate Boltzmann (softmax) action probs
+                    move_values = []
+                    cold_moves = env._locate_cold_moves(x, y, available)
+                    for move in available:
+                        if move in cold_moves:
+                            move_values.append(1)
+                        else:
+                            move_values.append(0)
+                    probs = np.exp(np.true_divide(move_values, fixed_opponent_tau))
+                    probs = np.true_divide(probs, sum(probs))
+                    move_i = np.random.choice(len(available),p=probs)
                 
                 else:
                     try:
