@@ -105,7 +105,9 @@ def wythoff_stumbler_strategist(num_episodes=10,
                                 strategist_monitor=None,
                                 monitor=None,
                                 return_none=False,
-                                debug=False):
+                                debug=False,
+                                use_fixed_opponent=False,
+                                fixed_opponent_tau=0.55):
     """Learn Wythoff's with a stumbler-strategist network"""
 
     # -----------------------------------------------------------------------
@@ -316,7 +318,9 @@ def wythoff_stumbler(num_episodes=10,
                      monitor=None,
                      return_none=False,
                      debug=False,
-                     seed=None):
+                     seed=None,
+                     use_fixed_opponent=False,
+                     fixed_opponent_tau=0.55):
     """Learn to play Wythoff's w/ e-greedy random exploration.
     
     Note: Learning is based on a player-opponent joint action formalism 
