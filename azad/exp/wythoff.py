@@ -196,7 +196,9 @@ def wythoff_stumbler_strategist(num_episodes=10,
             save_model=False,
             monitor=stumbler_monitor,
             return_none=False,
-            seed=seed)
+            seed=seed,
+            use_fixed_opponent=use_fixed_opponent,
+            fixed_opponent_tau=fixed_opponent_tau)
 
         # Strategist
         if not optimal_strategist:
@@ -444,15 +446,20 @@ def wythoff_stumbler(num_episodes=10,
             # ----------------------------------------------------------------
             if not done:
                 # OPPONENT CHOOSES A MOVE
-                try:
-                    Qs_episode = add_bias_board(opponent[board], available,
-                                                bias_board, influence)
-                    move_i = epsilon_greedy(Qs_episode,
-                                            epsilon=epsilon_e,
-                                            mode='numpy')
-                except KeyError:
-                    opponent[board] = np.ones(len(available)) * default_Q
+                if use_fixed_opponent:
+                    # TODO: change from fixed random to fixed difficulty
                     move_i = np.random.randint(0, len(available))
+                
+                else:
+                    try:
+                        Qs_episode = add_bias_board(opponent[board], available,
+                                                    bias_board, influence)
+                        move_i = epsilon_greedy(Qs_episode,
+                                                epsilon=epsilon_e,
+                                                mode='numpy')
+                    except KeyError:
+                        opponent[board] = np.ones(len(available)) * default_Q
+                        move_i = np.random.randint(0, len(available))
 
                 move = available[move_i]
 
@@ -512,31 +519,32 @@ def wythoff_stumbler(num_episodes=10,
             model[s][m_i] = Q + (learning_rate * loss)
 
         # OPPONENT
-        s_idx = np.arange(1, steps - 1, 2)
-        for i in s_idx:
-            # States and actions
-            s = t_state[i]
-            next_s = t_state[i + 2]
-            m_i = t_move_i[i]
-
-            # Value and reward
-            Q = opponent[s][m_i]
-
-            try:
-                max_Q = opponent[next_s].max()
-            except KeyError:
-                opponent[next_s] = np.ones(len(t_available[i])) * default_Q
-                max_Q = opponent[next_s].max()
-
-            if not player_win:
-                r = t_reward[i]
-            else:
-                r = -1 * t_reward[i + 1]
-
-            # Loss and learn
-            next_Q = r + (gamma * max_Q)
-            loss = next_Q - Q
-            opponent[s][m_i] = Q + (learning_rate * loss)
+        if not use_fixed_opponent:
+            s_idx = np.arange(1, steps - 1, 2)
+            for i in s_idx:
+                # States and actions
+                s = t_state[i]
+                next_s = t_state[i + 2]
+                m_i = t_move_i[i]
+    
+                # Value and reward
+                Q = opponent[s][m_i]
+    
+                try:
+                    max_Q = opponent[next_s].max()
+                except KeyError:
+                    opponent[next_s] = np.ones(len(t_available[i])) * default_Q
+                    max_Q = opponent[next_s].max()
+    
+                if not player_win:
+                    r = t_reward[i]
+                else:
+                    r = -1 * t_reward[i + 1]
+    
+                # Loss and learn
+                next_Q = r + (gamma * max_Q)
+                loss = next_Q - Q
+                opponent[s][m_i] = Q + (learning_rate * loss)
 
         # ----------------------------------------------------------------
         # Update the log
