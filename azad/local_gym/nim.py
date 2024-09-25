@@ -25,6 +25,12 @@ class NimEnv(WythoffEnv):
 
     def _create_moves(self):
         self.moves = create_moves(self.x, self.y)
+        
+    def _locate_cold_moves(x, y, moves):
+        if x != y:
+            return [(min(x,y), min(x,y))]
+        else:
+            return []
 
 
 class Nim3x3(NimEnv):

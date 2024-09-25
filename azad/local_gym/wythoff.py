@@ -197,6 +197,9 @@ class WythoffEnv(gym.Env):
 
     def render(self, mode='human', close=False):
         pass
+    
+    def _locate_cold_moves(x, y, moves):
+        return locate_cold_moves(x, y, moves)
 
 
 class Wythoff3x3(WythoffEnv):

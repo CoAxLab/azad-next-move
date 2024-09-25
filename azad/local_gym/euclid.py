@@ -1,3 +1,4 @@
+import math
 from azad.local_gym.wythoff import WythoffEnv
 
 
@@ -30,6 +31,14 @@ class EuclidEnv(WythoffEnv):
 
     def _create_moves(self):
         self.moves = create_moves(self.x, self.y)
+        
+    def _locate_cold_moves(x, y, moves):
+        cold_moves = []
+        for move in moves:
+            (r,c) = move
+            if max(r,c) / min(r,c) < (1 + math.sqrt(5)) / 2:
+                cold_moves.append(move)
+        return cold_moves
 
 
 class Euclid3x3(EuclidEnv):
