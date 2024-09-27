@@ -1,6 +1,18 @@
 import math
 from azad.local_gym.wythoff import WythoffEnv
 
+import numpy as np
+
+def create_cold_board_euclid(m, n, default=0.0, cold_value=1):
+    """Create a (m, n) binary board with cold moves as '1'"""
+    cold_board_euclid = np.ones((m, n)) * default
+    for r in range(m):
+        for c in range(n):
+            if max(r,c) / min(r,c) < (1 + math.sqrt(5)) / 2:
+                cold_board_euclid[r, c] = cold_value
+
+    return cold_board_euclid
+
 
 def create_moves(x, y):
     """Create all valid moves from (x, y)"""

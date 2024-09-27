@@ -36,6 +36,7 @@ from azad.local_gym.wythoff import create_board
 from azad.local_gym.wythoff import cold_move_available
 from azad.local_gym.wythoff import locate_closest_cold_move
 from azad.local_gym.wythoff import locate_cold_moves
+from azad.local_gym.euclid import create_cold_board_euclid
 
 from azad.models import Table
 from azad.models import DeepTable3
@@ -106,7 +107,7 @@ def wythoff_stumbler_strategist(num_episodes=10,
                                 monitor=None,
                                 return_none=False,
                                 debug=False,
-                                use_fixed_opponent=False,
+                                use_fixed_opponent=True,
                                 fixed_opponent_tau=0.55):
     """Learn Wythoff's with a stumbler-strategist network"""
 
@@ -321,7 +322,7 @@ def wythoff_stumbler(num_episodes=10,
                      return_none=False,
                      debug=False,
                      seed=None,
-                     use_fixed_opponent=False,
+                     use_fixed_opponent=True,
                      fixed_opponent_tau=0.55):
     """Learn to play Wythoff's w/ e-greedy random exploration.
     
@@ -831,8 +832,11 @@ def wythoff_strategist(stumbler_model,
             # Score the model:
             with th.no_grad():
                 pred = create_bias_board(m, n, model, default=0.0).numpy()
-                cold = create_cold_board(m, n, default=hot_value)
+                #cold = create_cold_board(m, n, default=hot_value)
+                cold = create_cold_board_euclid(m, n, default=hot_value)
                 mae = np.median(np.abs(pred - cold))
+                # cold_euclid = create_cold_board_euclid(m, n, default=hot_value)
+                # mae_euclid = np.median(np.abs(pred - cold_euclid))
 
             all_variables = locals()
             for k in monitor:
@@ -841,7 +845,8 @@ def wythoff_strategist(stumbler_model,
     # Final score for the model:
     with th.no_grad():
         pred = create_bias_board(m, n, model, default=0.0).numpy()
-        cold = create_cold_board(m, n, default=hot_value)
+        #cold = create_cold_board(m, n, default=hot_value)
+        cold = create_cold_board_euclid(m, n, default=hot_value)
         mae = np.median(np.abs(pred - cold))
 
     # Save?
@@ -857,7 +862,7 @@ def wythoff_strategist(stumbler_model,
         save_monitored(save, monitored)
 
     # Suppress return for parallel runs?
-    result = (model), (mae)
+    result = (model), (mae),
     if return_none:
         result = None
 
