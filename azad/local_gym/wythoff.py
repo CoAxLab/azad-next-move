@@ -200,6 +200,9 @@ class WythoffEnv(gym.Env):
     
     def get_locate_cold_moves(self, x, y, moves):
         return locate_cold_moves(x, y, moves)
+    
+    def get_cold_move_available(self, x, y, moves):
+        return cold_move_available(x, y, moves)
 
 
 class Wythoff3x3(WythoffEnv):

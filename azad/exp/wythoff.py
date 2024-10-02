@@ -33,9 +33,9 @@ from azad.local_gym.wythoff import create_all_possible_moves
 from azad.local_gym.wythoff import locate_moves
 from azad.local_gym.wythoff import create_cold_board
 from azad.local_gym.wythoff import create_board
-from azad.local_gym.wythoff import cold_move_available
+#from azad.local_gym.wythoff import cold_move_available
 from azad.local_gym.wythoff import locate_closest_cold_move
-from azad.local_gym.wythoff import locate_cold_moves
+#from azad.local_gym.wythoff import locate_cold_moves
 from azad.local_gym.euclid import create_cold_board_euclid
 
 from azad.models import Table
@@ -416,7 +416,7 @@ def wythoff_stumbler(num_episodes=10,
 
             # Analyze it...
             best = 0.0
-            if cold_move_available(x, y, available):
+            if env.get_cold_move_available(x, y, available):
                 if move in env.get_locate_cold_moves(x, y, available):
                     best = 1.0
                 score += (best - score) / (episode + 1)
@@ -1346,8 +1346,8 @@ def evaluate_wythoff(stumbler=None,
 
             # Analyze the choice
             best = 0.0
-            if cold_move_available(x, y, s_available):
-                if move in locate_cold_moves(x, y, s_available):
+            if env.get_cold_move_available(x, y, s_available):
+                if move in env.get_locate_cold_moves(x, y, s_available):
                     best = 1.0
                 stumbler_score += (best - stumbler_score) / (episode + 1)
 
@@ -1374,8 +1374,8 @@ def evaluate_wythoff(stumbler=None,
 
             # Analyze the choice
             best = 0.0
-            if cold_move_available(x, y, available):
-                if move in locate_cold_moves(x, y, available):
+            if env.get_cold_move_available(x, y, available):
+                if move in env.get_locate_cold_moves(x, y, available):
                     best = 1.0
                 strategist_score += (best - strategist_score) / (episode + 1)
 

@@ -16,6 +16,19 @@ def create_cold_board_euclid(m, n, default=0.0, cold_value=1):
     return cold_board_euclid
 
 
+def locate_all_cold_moves(m, n):
+    """Locate all the cold moves"""
+    moves = []
+    for r in range(m):
+        for c in range(n):
+            if r==0 or c ==0:
+                if r==c==0: moves.append((r, c))
+            elif max(r,c) / min(r,c) < (1 + math.sqrt(5)) / 2:
+                moves.append((r, c))
+
+    return moves
+
+
 def create_moves(x, y):
     """Create all valid moves from (x, y)"""
     a, b = x, y
@@ -55,6 +68,14 @@ class EuclidEnv(WythoffEnv):
             elif max(r,c) / min(r,c) < (1 + math.sqrt(5)) / 2:
                 cold_moves.append(move)
         return cold_moves
+    
+    def get_cold_move_available(self, x, y, moves):
+        colds = locate_all_cold_moves(x, y)
+        for cold in colds:
+            if cold in moves:
+                return True
+
+        return False
 
 
 class Euclid3x3(EuclidEnv):
