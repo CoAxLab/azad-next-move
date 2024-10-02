@@ -8,7 +8,9 @@ def create_cold_board_euclid(m, n, default=0.0, cold_value=1):
     cold_board_euclid = np.ones((m, n)) * default
     for r in range(m):
         for c in range(n):
-            if max(r,c) / min(r,c) < (1 + math.sqrt(5)) / 2:
+            if r==0 or c ==0:
+                if r==c==0: cold_board_euclid[r, c] = cold_value
+            elif max(r,c) / min(r,c) < (1 + math.sqrt(5)) / 2:
                 cold_board_euclid[r, c] = cold_value
 
     return cold_board_euclid
@@ -44,11 +46,13 @@ class EuclidEnv(WythoffEnv):
     def _create_moves(self):
         self.moves = create_moves(self.x, self.y)
         
-    def _locate_cold_moves(x, y, moves):
+    def get_locate_cold_moves(self, x, y, moves):
         cold_moves = []
         for move in moves:
             (r,c) = move
-            if max(r,c) / min(r,c) < (1 + math.sqrt(5)) / 2:
+            if r==0 or c==0:
+                if r==c==0: cold_moves.append(move)
+            elif max(r,c) / min(r,c) < (1 + math.sqrt(5)) / 2:
                 cold_moves.append(move)
         return cold_moves
 

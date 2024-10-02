@@ -417,7 +417,7 @@ def wythoff_stumbler(num_episodes=10,
             # Analyze it...
             best = 0.0
             if cold_move_available(x, y, available):
-                if move in locate_cold_moves(x, y, available):
+                if move in env.get_locate_cold_moves(x, y, available):
                     best = 1.0
                 score += (best - score) / (episode + 1)
 
@@ -443,14 +443,14 @@ def wythoff_stumbler(num_episodes=10,
                 t_available.append(available)
                 t_move_i.append(move_i)
                 t_reward.append(reward)
-
+                
             # ----------------------------------------------------------------
             if not done:
                 # OPPONENT CHOOSES A MOVE
                 if use_fixed_opponent:
                     # calculate Boltzmann (softmax) action probs
                     move_values = []
-                    cold_moves = env._locate_cold_moves(x, y, available)
+                    cold_moves = env.get_locate_cold_moves(x, y, available)
                     for move in available:
                         if move in cold_moves:
                             move_values.append(1)
@@ -832,11 +832,10 @@ def wythoff_strategist(stumbler_model,
             # Score the model:
             with th.no_grad():
                 pred = create_bias_board(m, n, model, default=0.0).numpy()
-                #cold = create_cold_board(m, n, default=hot_value)
-                cold = create_cold_board_euclid(m, n, default=hot_value)
+                cold = create_cold_board(m, n, default=hot_value)
                 mae = np.median(np.abs(pred - cold))
-                # cold_euclid = create_cold_board_euclid(m, n, default=hot_value)
-                # mae_euclid = np.median(np.abs(pred - cold_euclid))
+                cold_euclid = create_cold_board_euclid(m, n, default=hot_value)
+                mae_euclid = np.median(np.abs(pred - cold_euclid))
 
             all_variables = locals()
             for k in monitor:
@@ -860,6 +859,10 @@ def wythoff_strategist(stumbler_model,
 
     if monitor:
         save_monitored(save, monitored)
+        # save heatmap
+        # plot_wythoff_board(pred, vmin=-1.5, vmax=1.5, plot=False,
+        #                    path=save, height=2, width=3,
+        #                    name='_board.png')
 
     # Suppress return for parallel runs?
     result = (model), (mae),
@@ -1226,16 +1229,18 @@ def plot_wythoff_board(board,
     """Plot the board"""
 
     fig, ax = plt.subplots(figsize=(width, height))  # Sample figsize in inches
-    ax = sns.heatmap(board,
-                     linewidths=3,
-                     center=0,
-                     vmin=vmin,
-                     vmax=vmax,
-                     ax=ax)
+    ax.imshow(board, cmap='bwr', vmin=vmin, vmax=vmax)
+    # ax = sns.heatmap(board,
+    #                  linewidths=3,
+    #                  center=0,
+    #                  vmin=vmin,
+    #                  vmax=vmax,
+    #                  ax=ax)
 
     # Save an image?
     if path is not None:
-        plt.savefig(os.path.join(path, name))
+        #plt.savefig(os.path.join(path, name))
+        plt.savefig(path + name)
 
     if plot:
         # plt.show()

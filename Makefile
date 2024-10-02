@@ -326,7 +326,7 @@ wythoff_exp14:
 	parallel -j 8 -v \
 		--joblog '$(DATA_PATH)/wythoff/exp14/exp14.parallel.log' \
 		--nice 19 --delay 2 \
-		"run_azad.py wythoff_stumbler_strategist --save=$(DATA_PATH)/wythoff/exp14/run_{1} --monitor='('episode', 'influence')' --stumbler_monitor='('episode', 'loss', 'score', 'total_reward')' --strategist_monitor='('episode', 'loss', 'mae')' --num_episodes=150 --update_every=10 --learning_rate_influence=0.2 --num_stumbles=500 --learning_rate_stumbler=0.4 --stumbler_game=Wythoff15x15 --epsilon=0.4 --anneal=True --gamma=0.5 --num_strategies=500 --learning_rate_strategist=0.025 --strategist_game=Wythoff50x50 --cold_threshold=-0.2 --hot_threshold=0.2 --hot_value=-1 --cold_value=1 --debug=False --save_model=True --return_none=True --debug=False --seed={1}" ::: \
+		"run_azad.py wythoff_stumbler_strategist --save=$(DATA_PATH)/wythoff/exp14/run_{1} --monitor='('episode', 'influence')' --stumbler_monitor='('episode', 'loss', 'score', 'total_reward')' --strategist_monitor='('episode', 'loss', 'mae', 'mae_euclid')' --num_episodes=150 --update_every=10 --learning_rate_influence=0.2 --num_stumbles=500 --learning_rate_stumbler=0.4 --stumbler_game=Wythoff15x15 --epsilon=0.4 --anneal=True --gamma=0.5 --num_strategies=500 --learning_rate_strategist=0.025 --strategist_game=Wythoff50x50 --cold_threshold=-0.2 --hot_threshold=0.2 --hot_value=-1 --cold_value=1 --debug=False --save_model=True --return_none=True --debug=False --seed={1}" ::: \
 		{1..20}
 
 
@@ -1535,3 +1535,92 @@ wythoff_eval63a:
 	parallel -j 20 -v \
 		--nice 19 \
 		"run_azad.py evaluate_dqn3 $(DATA_PATH)/wythoff/exp63/run_{2}_{1}.pytorch --game=Wythoff15x15 --num_episodes=1e2 --opponent=random --debug=False --save=$(DATA_PATH)/wythoff/exp63/eval_{2}_random_{1} --monitor='('episode', 'total_reward', 'score')' --network={2} --return_none=True" ::: {2..22} ::: DQN_hot1 DQN_hot1 DQN_hot2 DQN_hot3 DQN_hot4 DQN_hot5 DQN_conv2 DQN_conv3
+
+# ------------------------------------------------------------------------
+# Jack Burgess
+# 10-2-2024
+# train on Wythoff's for only 1000 episodes.
+wythoff_exp1000:
+	-rm -rf $(DATA_PATH)/wythoff/exp1000
+	-mkdir $(DATA_PATH)/wythoff/exp1000
+	parallel -j 8 -v \
+		--joblog '$(DATA_PATH)/wythoff/exp1000/exp1000.parallel.log' \
+		--nice 19 --delay 2 \
+		"run_azad.py wythoff_stumbler_strategist --save=$(DATA_PATH)/wythoff/exp1000/run_{1} --monitor='('episode', 'influence')' --stumbler_monitor='('episode', 'loss', 'score', 'total_reward')' --strategist_monitor='('episode', 'loss', 'mae', 'mae_euclid')' --num_episodes=2 --update_every=10 --learning_rate_influence=0.2 --num_stumbles=500 --learning_rate_stumbler=0.4 --stumbler_game=Wythoff15x15 --epsilon=0.4 --anneal=True --gamma=0.5 --num_strategies=500 --learning_rate_strategist=0.025 --strategist_game=Wythoff50x50 --cold_threshold=-0.2 --hot_threshold=0.2 --hot_value=-1 --cold_value=1 --debug=False --save_model=True --return_none=True --debug=False --seed={1}" ::: \
+		{1..20}
+
+# train on Wythoff's for only 5000 episodes.
+wythoff_exp5000:
+	-rm -rf $(DATA_PATH)/wythoff/exp5000
+	-mkdir $(DATA_PATH)/wythoff/exp5000
+	parallel -j 8 -v \
+		--joblog '$(DATA_PATH)/wythoff/exp5000/exp5000.parallel.log' \
+		--nice 19 --delay 2 \
+		"run_azad.py wythoff_stumbler_strategist --save=$(DATA_PATH)/wythoff/exp5000/run_{1} --monitor='('episode', 'influence')' --stumbler_monitor='('episode', 'loss', 'score', 'total_reward')' --strategist_monitor='('episode', 'loss', 'mae', 'mae_euclid')' --num_episodes=10 --update_every=10 --learning_rate_influence=0.2 --num_stumbles=500 --learning_rate_stumbler=0.4 --stumbler_game=Wythoff15x15 --epsilon=0.4 --anneal=True --gamma=0.5 --num_strategies=500 --learning_rate_strategist=0.025 --strategist_game=Wythoff50x50 --cold_threshold=-0.2 --hot_threshold=0.2 --hot_value=-1 --cold_value=1 --debug=False --save_model=True --return_none=True --debug=False --seed={1}" ::: \
+		{1..20}
+
+# train on Wythoff's for only 10000 episodes.
+wythoff_exp10000:
+	-rm -rf $(DATA_PATH)/wythoff/exp10000
+	-mkdir $(DATA_PATH)/wythoff/exp10000
+	parallel -j 8 -v \
+		--joblog '$(DATA_PATH)/wythoff/exp10000/exp10000.parallel.log' \
+		--nice 19 --delay 2 \
+		"run_azad.py wythoff_stumbler_strategist --save=$(DATA_PATH)/wythoff/exp10000/run_{1} --monitor='('episode', 'influence')' --stumbler_monitor='('episode', 'loss', 'score', 'total_reward')' --strategist_monitor='('episode', 'loss', 'mae', 'mae_euclid')' --num_episodes=20 --update_every=10 --learning_rate_influence=0.2 --num_stumbles=500 --learning_rate_stumbler=0.4 --stumbler_game=Wythoff15x15 --epsilon=0.4 --anneal=True --gamma=0.5 --num_strategies=500 --learning_rate_strategist=0.025 --strategist_game=Wythoff50x50 --cold_threshold=-0.2 --hot_threshold=0.2 --hot_value=-1 --cold_value=1 --debug=False --save_model=True --return_none=True --debug=False --seed={1}" ::: \
+		{1..20}
+
+# train on Wythoff's for only 50000 episodes.
+wythoff_exp50000:
+	-rm -rf $(DATA_PATH)/wythoff/exp50000
+	-mkdir $(DATA_PATH)/wythoff/exp50000
+	parallel -j 8 -v \
+		--joblog '$(DATA_PATH)/wythoff/exp50000/exp50000.parallel.log' \
+		--nice 19 --delay 2 \
+		"run_azad.py wythoff_stumbler_strategist --save=$(DATA_PATH)/wythoff/exp50000/run_{1} --monitor='('episode', 'influence')' --stumbler_monitor='('episode', 'loss', 'score', 'total_reward')' --strategist_monitor='('episode', 'loss', 'mae', 'mae_euclid')' --num_episodes=100 --update_every=10 --learning_rate_influence=0.2 --num_stumbles=500 --learning_rate_stumbler=0.4 --stumbler_game=Wythoff15x15 --epsilon=0.4 --anneal=True --gamma=0.5 --num_strategies=500 --learning_rate_strategist=0.025 --strategist_game=Wythoff50x50 --cold_threshold=-0.2 --hot_threshold=0.2 --hot_value=-1 --cold_value=1 --debug=False --save_model=True --return_none=True --debug=False --seed={1}" ::: \
+		{1..20}
+
+# Test transfer to Euclid after 1000 episodes of training on Wythoff's.
+wythoff_exp1000_euc:
+	-rm -rf $(DATA_PATH)/wythoff/exp1000_euc
+	-mkdir $(DATA_PATH)/wythoff/exp1000_euc
+	parallel -j 8 -v \
+		--joblog '$(DATA_PATH)/wythoff/exp1000_euc/exp1000_euc.parallel.log' \
+		--nice 19 --delay 2 \
+		"run_azad.py wythoff_stumbler_strategist --save=$(DATA_PATH)/wythoff/exp1000_euc/run_{1} --load_model=$(DATA_PATH)/wythoff/exp1000/run_{1}.pytorch --new_rules=True --monitor='('episode', 'influence', 'eval_score_a', 'eval_score_b')' --stumbler_monitor='('episode', 'loss', 'score', 'total_reward')' --strategist_monitor='('episode', 'loss', 'mae')' --num_episodes=150 --update_every=10 --learning_rate_influence=0.2 --num_stumbles=500 --learning_rate_stumbler=0.4 --stumbler_game=Euclid15x15 --epsilon=0.4 --anneal=True --gamma=0.5 --num_strategies=500 --learning_rate_strategist=0.025 --strategist_game=Euclid50x50 --cold_threshold=-0.2 --hot_threshold=0.2 --hot_value=-1 --cold_value=1 --debug=False --save_model=True --return_none=True --debug=False --seed={1}" ::: \
+		{1..20}
+
+# Test transfer to Euclid after 5000 episodes of training on Wythoff's.
+wythoff_exp5000_euc:
+	-rm -rf $(DATA_PATH)/wythoff/exp5000_euc
+	-mkdir $(DATA_PATH)/wythoff/exp5000_euc
+	parallel -j 8 -v \
+		--joblog '$(DATA_PATH)/wythoff/exp5000_euc/exp5000_euc.parallel.log' \
+		--nice 19 --delay 2 \
+		"run_azad.py wythoff_stumbler_strategist --save=$(DATA_PATH)/wythoff/exp5000_euc/run_{1} --load_model=$(DATA_PATH)/wythoff/exp5000/run_{1}.pytorch --new_rules=True --monitor='('episode', 'influence', 'eval_score_a', 'eval_score_b')' --stumbler_monitor='('episode', 'loss', 'score', 'total_reward')' --strategist_monitor='('episode', 'loss', 'mae')' --num_episodes=150 --update_every=10 --learning_rate_influence=0.2 --num_stumbles=500 --learning_rate_stumbler=0.4 --stumbler_game=Euclid15x15 --epsilon=0.4 --anneal=True --gamma=0.5 --num_strategies=500 --learning_rate_strategist=0.025 --strategist_game=Euclid50x50 --cold_threshold=-0.2 --hot_threshold=0.2 --hot_value=-1 --cold_value=1 --debug=False --save_model=True --return_none=True --debug=False --seed={1}" ::: \
+		{1..20}
+
+# Test transfer to Euclid after 10000 episodes of training on Wythoff's.
+wythoff_exp10000_euc:
+	-rm -rf $(DATA_PATH)/wythoff/exp10000_euc
+	-mkdir $(DATA_PATH)/wythoff/exp10000_euc
+	parallel -j 8 -v \
+		--joblog '$(DATA_PATH)/wythoff/exp10000_euc/exp10000_euc.parallel.log' \
+		--nice 19 --delay 2 \
+		"run_azad.py wythoff_stumbler_strategist --save=$(DATA_PATH)/wythoff/exp10000_euc/run_{1} --load_model=$(DATA_PATH)/wythoff/exp10000/run_{1}.pytorch --new_rules=True --monitor='('episode', 'influence', 'eval_score_a', 'eval_score_b')' --stumbler_monitor='('episode', 'loss', 'score', 'total_reward')' --strategist_monitor='('episode', 'loss', 'mae')' --num_episodes=150 --update_every=10 --learning_rate_influence=0.2 --num_stumbles=500 --learning_rate_stumbler=0.4 --stumbler_game=Euclid15x15 --epsilon=0.4 --anneal=True --gamma=0.5 --num_strategies=500 --learning_rate_strategist=0.025 --strategist_game=Euclid50x50 --cold_threshold=-0.2 --hot_threshold=0.2 --hot_value=-1 --cold_value=1 --debug=False --save_model=True --return_none=True --debug=False --seed={1}" ::: \
+		{1..20}
+
+# Test transfer to Euclid after 10000 episodes of training on Wythoff's.
+wythoff_exp50000_euc:
+	-rm -rf $(DATA_PATH)/wythoff/exp50000_euc
+	-mkdir $(DATA_PATH)/wythoff/exp50000_euc
+	parallel -j 8 -v \
+		--joblog '$(DATA_PATH)/wythoff/exp50000_euc/exp50000_euc.parallel.log' \
+		--nice 19 --delay 2 \
+		"run_azad.py wythoff_stumbler_strategist --save=$(DATA_PATH)/wythoff/exp50000_euc/run_{1} --load_model=$(DATA_PATH)/wythoff/exp50000/run_{1}.pytorch --new_rules=True --monitor='('episode', 'influence', 'eval_score_a', 'eval_score_b')' --stumbler_monitor='('episode', 'loss', 'score', 'total_reward')' --strategist_monitor='('episode', 'loss', 'mae')' --num_episodes=150 --update_every=10 --learning_rate_influence=0.2 --num_stumbles=500 --learning_rate_stumbler=0.4 --stumbler_game=Euclid15x15 --epsilon=0.4 --anneal=True --gamma=0.5 --num_strategies=500 --learning_rate_strategist=0.025 --strategist_game=Euclid50x50 --cold_threshold=-0.2 --hot_threshold=0.2 --hot_value=-1 --cold_value=1 --debug=False --save_model=True --return_none=True --debug=False --seed={1}" ::: \
+		{1..20}
+
+
+
+
+
+
