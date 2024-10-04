@@ -44,7 +44,7 @@ def create_moves(x, y):
                 moves.append((c, b))
             if b >= a:
                 moves.append((a, c))
-
+    assert(list(set(moves)) is not None)
     return list(set(moves))
 
 
@@ -71,11 +71,26 @@ class EuclidEnv(WythoffEnv):
     
     def get_cold_move_available(self, x, y, moves):
         colds = locate_all_cold_moves(x, y)
-        for cold in colds:
-            if cold in moves:
+        #assert(type(moves)==list)
+        #if set(colds).intersection(moves): assert(False)
+        for move in self.moves:
+            if colds.__contains__(move):
+                print()
+                print()
+                print(f'x: {x}')
+                print(f'y: {y}')
+                print(f'moves: {moves}')
+                print(f'colds: {colds}')
+                print()
+                print()
+                assert(False)
                 return True
 
         return False
+    
+    def get_create_moves(self):
+        self._create_moves()
+        return self.moves
 
 
 class Euclid3x3(EuclidEnv):

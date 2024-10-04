@@ -147,6 +147,7 @@ class WythoffEnv(gym.Env):
         self.prng = np.random.RandomState(seed)
 
     def step(self, move):
+        assert(move in self.moves)
         # Parse the move
         dx, dy = move
         dx = int(dx)
@@ -203,6 +204,10 @@ class WythoffEnv(gym.Env):
     
     def get_cold_move_available(self, x, y, moves):
         return cold_move_available(x, y, moves)
+    
+    def get_create_moves(self):
+        self._create_moves()
+        return(self.moves)
 
 
 class Wythoff3x3(WythoffEnv):

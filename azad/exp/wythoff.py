@@ -28,7 +28,7 @@ from skimage import data, io
 import gym
 from gym import wrappers
 import azad.local_gym
-from azad.local_gym.wythoff import create_moves
+#from azad.local_gym.wythoff import create_moves
 from azad.local_gym.wythoff import create_all_possible_moves
 from azad.local_gym.wythoff import locate_moves
 from azad.local_gym.wythoff import create_cold_board
@@ -417,6 +417,7 @@ def wythoff_stumbler(num_episodes=10,
             # Analyze it...
             best = 0.0
             if env.get_cold_move_available(x, y, available):
+                assert(False)
                 if move in env.get_locate_cold_moves(x, y, available):
                     best = 1.0
                 score += (best - score) / (episode + 1)
@@ -1325,10 +1326,11 @@ def evaluate_wythoff(stumbler=None,
             # STUMBLER
             if (x < o) and (y < p):
                 s_board = tuple(flatten_board(create_board(x, y, o, p)))
-                s_available = create_moves(x, y)
+                s_available = env.get_create_moves()
                 try:
                     values = stumbler[s_board]
                     move_i = epsilon_greedy(values, epsilon=0.0, mode='numpy')
+                    assert(s_available is not None)
                     move = s_available[move_i]
                 except KeyError:
                     move_i = np.random.randint(0, len(s_available))
