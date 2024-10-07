@@ -19,11 +19,10 @@ def create_cold_board_euclid(m, n, default=0.0, cold_value=1):
 def locate_all_cold_moves(m, n):
     """Locate all the cold moves"""
     moves = []
-    for r in range(m):
-        for c in range(n):
-            if r==0 or c ==0:
-                if r==c==0: moves.append((r, c))
-            elif max(r,c) / min(r,c) < (1 + math.sqrt(5)) / 2:
+    moves.append((0, 0))
+    for r in range(1, m + 1):
+        for c in range(1, n + 1):
+            if max(r,c) / min(r,c) < (1 + math.sqrt(5)) / 2:
                 moves.append((r, c))
 
     return moves
@@ -74,18 +73,27 @@ class EuclidEnv(WythoffEnv):
         #assert(type(moves)==list)
         #if set(colds).intersection(moves): assert(False)
         for move in self.moves:
-            if colds.__contains__(move):
-                print()
-                print()
-                print(f'x: {x}')
-                print(f'y: {y}')
-                print(f'moves: {moves}')
-                print(f'colds: {colds}')
-                print()
-                print()
-                assert(False)
+            if move in colds:
+                # print()
+                # print('yay')
+                # print(f'x: {x}')
+                # print(f'y: {y}')
+                # print(f'moves: {moves}')
+                # print(f'colds: {colds}')
+                # print()
+                # print()
+                # assert(False)
                 return True
-
+        
+        # print()
+        # print('wah')
+        # print(f'x: {x}')
+        # print(f'y: {y}')
+        # print(f'moves: {moves}')
+        # print(f'colds: {colds}')
+        # print()
+        # print()
+        # assert(False)
         return False
     
     def get_create_moves(self):

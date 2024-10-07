@@ -417,7 +417,6 @@ def wythoff_stumbler(num_episodes=10,
             # Analyze it...
             best = 0.0
             if env.get_cold_move_available(x, y, available):
-                assert(False)
                 if move in env.get_locate_cold_moves(x, y, available):
                     best = 1.0
                 score += (best - score) / (episode + 1)
