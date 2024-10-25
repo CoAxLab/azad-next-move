@@ -323,7 +323,9 @@ def wythoff_stumbler(num_episodes=10,
                      debug=False,
                      seed=None,
                      use_fixed_opponent=True,
-                     fixed_opponent_tau=0.55):
+                     fixed_opponent_tau=0.55,
+                     total_wins=0,
+                     total_losses=0):
     """Learn to play Wythoff's w/ e-greedy random exploration.
     
     Note: Learning is based on a player-opponent joint action formalism 
@@ -522,6 +524,8 @@ def wythoff_stumbler(num_episodes=10,
 
             # Update running reward total for player
             total_reward += r
+            if r > 0: total_wins   += 1
+            if r < 0: total_losses += 1
 
             # Loss and learn
             next_Q = r + (gamma * max_Q)
