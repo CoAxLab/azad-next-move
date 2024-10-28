@@ -107,6 +107,7 @@ def wythoff_stumbler_strategist(num_episodes=10,
                                 monitor=None,
                                 return_none=False,
                                 debug=False,
+                                strategy='imagination', # option 2 is 'replay'
                                 use_fixed_opponent=True,
                                 fixed_opponent_tau=0.55):
     """Learn Wythoff's with a stumbler-strategist network"""
@@ -176,7 +177,7 @@ def wythoff_stumbler_strategist(num_episodes=10,
         if save is not None:
             save_a = save + "_episode{}_stumbler".format(episode)
 
-        (player, opponent), (score_a, total_reward_a) = wythoff_stumbler(
+        (player, opponent), (score_a, total_reward_a), (stumb_score, strat_score) = wythoff_stumbler(
             num_episodes=num_stumbles,
             game=stumbler_game,
             epsilon=epsilon,
@@ -198,6 +199,7 @@ def wythoff_stumbler_strategist(num_episodes=10,
             monitor=stumbler_monitor,
             return_none=False,
             seed=seed,
+            strategy=strategy,
             use_fixed_opponent=use_fixed_opponent,
             fixed_opponent_tau=fixed_opponent_tau)
 
@@ -253,6 +255,13 @@ def wythoff_stumbler_strategist(num_episodes=10,
         else:
             influence -= learning_rate_influence
         influence = np.clip(influence, 0, 1)
+        
+        if strategy=='replay':
+            if stumb_score > strat_score:
+                influence -= learning_rate_influence
+            if strat_score > stumb_score:
+                influence += learning_rate_influence
+            influence = np.clip(influence, 0, 1)
 
         # --------------------------------------------------------------------
         if tensorboard:
@@ -322,6 +331,7 @@ def wythoff_stumbler(num_episodes=10,
                      return_none=False,
                      debug=False,
                      seed=None,
+                     strategy='imagination',
                      use_fixed_opponent=True,
                      fixed_opponent_tau=0.55,
                      total_wins=0,
@@ -368,11 +378,17 @@ def wythoff_stumbler(num_episodes=10,
             print(">>> Loadiing model/opponent from {}".format(load_model))
 
         model, opponent = load_stumbler(model, opponent, load_model)
-
+    
+    stumb_score = 0 # games where moves were pref. by stumbler (wins-losses)
+    strat_score = 0 # games where moves were pref. by strategist (wins-losses)
+    
     # ------------------------------------------------------------------------
     for episode in range(initial, initial + num_episodes):
         # Re-init
         steps = 1
+        
+        stumb_top_moves = 0 # moves preffered by stumbler
+        strat_top_moves = 0 # moves preferred by strategist
 
         x, y, board, available = env.reset()
         board = tuple(flatten_board(board))
@@ -410,6 +426,23 @@ def wythoff_stumbler(num_episodes=10,
                 move_i = epsilon_greedy(Qs_episode,
                                         epsilon=epsilon_e,
                                         mode='numpy')
+                
+                if strategy=='replay':
+                    stumb_Qs = add_bias_board(model[board], available,
+                                              None, 0) #influence zero
+                    stumb_top_move = epsilon_greedy(stumb_Qs,
+                                                    epsilon=0,
+                                                    mode='numpy')
+                    if stumb_top_move == move_i: stumb_top_moves += 1
+                    
+                    blank_board = np.ones(len(available)) * default_Q
+                    strat_Qs = add_bias_board(blank_board, available,
+                                              bias_board, 1)
+                    strat_top_move = epsilon_greedy(strat_Qs,
+                                                    epsilon=0,
+                                                    mode='numpy')
+                    if strat_top_move == move_i: strat_top_moves += 1
+                
             except KeyError:
                 model[board] = np.ones(len(available)) * default_Q
                 move_i = np.random.randint(0, len(available))
@@ -445,6 +478,8 @@ def wythoff_stumbler(num_episodes=10,
                 t_available.append(available)
                 t_move_i.append(move_i)
                 t_reward.append(reward)
+                if stumb_top_moves > strat_top_moves: stumb_score += 1
+                if strat_top_moves > stumb_top_moves: strat_score += 1
                 
             # ----------------------------------------------------------------
             if not done:
@@ -496,6 +531,8 @@ def wythoff_stumbler(num_episodes=10,
                     t_available.append(available)
                     t_move_i.append(move_i)
                     t_reward.append(reward)
+                    if stumb_top_moves > strat_top_moves: stumb_score -= 1
+                    if strat_top_moves > stumb_top_moves: strat_score -= 1
 
         # ----------------------------------------------------------------
         # Learn by unrolling the last game...
@@ -608,7 +645,7 @@ def wythoff_stumbler(num_episodes=10,
                 'opponent',
                 skimage.io.imread(
                     os.path.join(tensorboard, 'opponent_max_values.png')))
-
+            
         if monitor and (int(episode) % update_every) == 0:
             all_variables = locals()
             for k in monitor:
@@ -628,7 +665,7 @@ def wythoff_stumbler(num_episodes=10,
     if tensorboard:
         writer.close()
 
-    result = (model, opponent), (score, total_reward)
+    result = (model, opponent), (score, total_reward), (stumb_score, strat_score)
     if return_none:
         result = None
 
