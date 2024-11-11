@@ -171,13 +171,15 @@ def wythoff_stumbler_strategist(num_episodes=10,
     score_a = 0.0
     score_b = 0.0
     total_reward_a = 0.0
+    stumb_score = 0
+    strat_score = 0
     for episode in range(num_episodes):
         # Stumbler
         save_a = None
         if save is not None:
             save_a = save + "_episode{}_stumbler".format(episode)
 
-        (player, opponent), (score_a, total_reward_a), (stumb_score, strat_score) = wythoff_stumbler(
+        (player, opponent), (score_a, total_reward_a), (n_wins, n_losses) = wythoff_stumbler(
             num_episodes=num_stumbles,
             game=stumbler_game,
             epsilon=epsilon,
@@ -257,11 +259,23 @@ def wythoff_stumbler_strategist(num_episodes=10,
         influence = np.clip(influence, 0, 1)
         
         if strategy=='replay':
-            if stumb_score > strat_score:
-                influence -= learning_rate_influence
-            if strat_score > stumb_score:
+            # # compute wins and losses from total reward and number of episodes
+            # n_wins = total_reward_a + (num_stumbles - total_reward_a)/2
+            # n_losses = num_stumbles - n_wins
+            assert(n_wins >= 0 and n_losses >= 0)
+            if np.random.default_rng().random() < n_wins / num_stumbles:
                 influence += learning_rate_influence
+            else:
+                influence -= learning_rate_influence
             influence = np.clip(influence, 0, 1)
+        
+        # if strategy == 'replay':
+        #     if stumb_score > strat_score:
+        #         influence -= learning_rate_influence
+        #     if strat_score > stumb_score:
+        #         influence += learning_rate_influence
+        #     influence = np.clip(influence, 0, 1)
+        
 
         # --------------------------------------------------------------------
         if tensorboard:
@@ -379,16 +393,18 @@ def wythoff_stumbler(num_episodes=10,
 
         model, opponent = load_stumbler(model, opponent, load_model)
     
-    stumb_score = 0 # games where moves were pref. by stumbler (wins-losses)
-    strat_score = 0 # games where moves were pref. by strategist (wins-losses)
+    # stumb_score = 0 # games where moves were pref. by stumbler (wins-losses)
+    # strat_score = 0 # games where moves were pref. by strategist (wins-losses)
+    n_wins   = 0
+    n_losses = 0
     
     # ------------------------------------------------------------------------
     for episode in range(initial, initial + num_episodes):
         # Re-init
         steps = 1
         
-        stumb_top_moves = 0 # moves preffered by stumbler
-        strat_top_moves = 0 # moves preferred by strategist
+        # stumb_top_moves = 0 # moves preffered by stumbler
+        # strat_top_moves = 0 # moves preferred by strategist
 
         x, y, board, available = env.reset()
         board = tuple(flatten_board(board))
@@ -427,21 +443,23 @@ def wythoff_stumbler(num_episodes=10,
                                         epsilon=epsilon_e,
                                         mode='numpy')
                 
-                if strategy=='replay':
-                    stumb_Qs = add_bias_board(model[board], available,
-                                              None, 0) #influence zero
-                    stumb_top_move = epsilon_greedy(stumb_Qs,
-                                                    epsilon=0,
-                                                    mode='numpy')
-                    if stumb_top_move == move_i: stumb_top_moves += 1
+                # if strategy=='replay':
+                #     stumb_Qs = add_bias_board(model[board], available,
+                #                               None, 0) #influence zero
+                #     stumb_top_move = epsilon_greedy(stumb_Qs,
+                #                                     epsilon=0,
+                #                                     mode='numpy')
+                #     if stumb_top_move == move_i: stumb_top_moves += 1
                     
-                    blank_board = np.ones(len(available)) * default_Q
-                    strat_Qs = add_bias_board(blank_board, available,
-                                              bias_board, 1)
-                    strat_top_move = epsilon_greedy(strat_Qs,
-                                                    epsilon=0,
-                                                    mode='numpy')
-                    if strat_top_move == move_i: strat_top_moves += 1
+                #     # blank_board = np.ones(len(available)) * default_Q
+                #     # strat_Qs = add_bias_board(blank_board, available,
+                #     #                           bias_board, 1)
+                #     strat_Qs = add_bias_board(model[board], available,
+                #                               bias_board, (influence + 1) / 2)
+                #     strat_top_move = epsilon_greedy(strat_Qs,
+                #                                     epsilon=0,
+                #                                     mode='numpy')
+                #     if strat_top_move == move_i: strat_top_moves += 1
                 
             except KeyError:
                 model[board] = np.ones(len(available)) * default_Q
@@ -478,8 +496,9 @@ def wythoff_stumbler(num_episodes=10,
                 t_available.append(available)
                 t_move_i.append(move_i)
                 t_reward.append(reward)
-                if stumb_top_moves > strat_top_moves: stumb_score += 1
-                if strat_top_moves > stumb_top_moves: strat_score += 1
+                # if stumb_top_moves > strat_top_moves: stumb_score += 1
+                # if strat_top_moves > stumb_top_moves: strat_score += 1
+                n_wins += 1
                 
             # ----------------------------------------------------------------
             if not done:
@@ -531,8 +550,9 @@ def wythoff_stumbler(num_episodes=10,
                     t_available.append(available)
                     t_move_i.append(move_i)
                     t_reward.append(reward)
-                    if stumb_top_moves > strat_top_moves: stumb_score -= 1
-                    if strat_top_moves > stumb_top_moves: strat_score -= 1
+                    # if stumb_top_moves > strat_top_moves: stumb_score -= 1
+                    # if strat_top_moves > stumb_top_moves: strat_score -= 1
+                    n_losses += 1
 
         # ----------------------------------------------------------------
         # Learn by unrolling the last game...
@@ -665,7 +685,7 @@ def wythoff_stumbler(num_episodes=10,
     if tensorboard:
         writer.close()
 
-    result = (model, opponent), (score, total_reward), (stumb_score, strat_score)
+    result = (model, opponent), (score, total_reward), (n_wins, n_losses)
     if return_none:
         result = None
 
