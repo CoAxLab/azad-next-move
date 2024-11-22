@@ -107,7 +107,7 @@ def wythoff_stumbler_strategist(num_episodes=10,
                                 monitor=None,
                                 return_none=False,
                                 debug=False,
-                                strategy='imagination', # option 2 is 'replay'
+                                strategy='imagination', # other option 'replay'
                                 use_fixed_opponent=True,
                                 fixed_opponent_tau=0.55):
     """Learn Wythoff's with a stumbler-strategist network"""
@@ -171,15 +171,17 @@ def wythoff_stumbler_strategist(num_episodes=10,
     score_a = 0.0
     score_b = 0.0
     total_reward_a = 0.0
-    stumb_score = 0
-    strat_score = 0
+    total_wins   = 0 # across all learning
+    total_losses = 0
+    n_wins   = 0 # across each set of episodes
+    n_losses = 0
     for episode in range(num_episodes):
         # Stumbler
         save_a = None
         if save is not None:
             save_a = save + "_episode{}_stumbler".format(episode)
 
-        (player, opponent), (score_a, total_reward_a), (n_wins, n_losses) = wythoff_stumbler(
+        (player, opponent), (score_a, total_reward_a), (n_wins, n_losses), (total_wins, total_losses) = wythoff_stumbler(
             num_episodes=num_stumbles,
             game=stumbler_game,
             epsilon=epsilon,
@@ -203,7 +205,9 @@ def wythoff_stumbler_strategist(num_episodes=10,
             seed=seed,
             strategy=strategy,
             use_fixed_opponent=use_fixed_opponent,
-            fixed_opponent_tau=fixed_opponent_tau)
+            fixed_opponent_tau=fixed_opponent_tau,
+            total_wins   = total_wins,
+            total_losses = total_losses)
 
         # Strategist
         if not optimal_strategist:
@@ -685,7 +689,7 @@ def wythoff_stumbler(num_episodes=10,
     if tensorboard:
         writer.close()
 
-    result = (model, opponent), (score, total_reward), (n_wins, n_losses)
+    result = (model, opponent), (score, total_reward), (n_wins, n_losses), (total_wins, total_losses)
     if return_none:
         result = None
 
