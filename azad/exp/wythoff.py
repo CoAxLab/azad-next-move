@@ -272,6 +272,16 @@ def wythoff_stumbler_strategist(num_episodes=10,
             else:
                 influence -= learning_rate_influence
             influence = np.clip(influence, 0, 1)
+
+        if strategy=='perfect_replay':
+            # # compute wins and losses from total reward and number of episodes
+            # n_wins = total_reward_a + (num_stumbles - total_reward_a)/2
+            # n_losses = num_stumbles - n_wins
+            if  n_wins > n_losses:
+                influence += learning_rate_influence
+            if  n_wins < n_losses:
+                influence -= learning_rate_influence
+            influence = np.clip(influence, 0, 1)
         
         # if strategy == 'replay':
         #     if stumb_score > strat_score:

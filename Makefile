@@ -1630,4 +1630,13 @@ wythoff_exp14_replay:
 		{1..100}
 
 
+wythoff_exp14_perfect_replay:
+	-rm -rf $(DATA_PATH)/wythoff/exp14_perfect_replay
+	-mkdir $(DATA_PATH)/wythoff/exp14_perfect_replay
+	parallel -j 8 -v \
+		--joblog '$(DATA_PATH)/wythoff/exp14_perfect_replay/exp14_perfect_replay.parallel.log' \
+		--nice 19 --delay 2 \
+		"run_azad.py wythoff_stumbler_strategist --save=$(DATA_PATH)/wythoff/exp14_perfect_replay/run_{1} --monitor='('episode', 'influence')' --stumbler_monitor='('episode', 'loss', 'score', 'total_wins', 'total_losses', 'total_reward')' --strategist_monitor='('episode', 'loss', 'mae', 'mae_euclid')' --num_episodes=150 --update_every=10 --learning_rate_influence=0.2 --num_stumbles=500 --learning_rate_stumbler=0.4 --stumbler_game=Wythoff15x15 --epsilon=0.4 --anneal=True --gamma=0.5 --num_strategies=500 --learning_rate_strategist=0.025 --strategist_game=Wythoff50x50 --cold_threshold=-0.2 --hot_threshold=0.2 --hot_value=-1 --cold_value=1 --debug=False --save_model=True --return_none=True --debug=False --strategy='perfect_replay' --seed={1}" ::: \
+		{21..100}
+
 
