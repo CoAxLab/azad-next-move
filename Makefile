@@ -311,7 +311,7 @@ wythoff_exp13:
 	parallel -j 8 -v \
 		--joblog '$(DATA_PATH)/wythoff/exp13/exp13.parallel.log' \
 		--nice 19 --delay 2 \
-		"run_azad.py wythoff_stumbler --save=$(DATA_PATH)/wythoff/exp13/run_{1} --monitor='('episode', 'loss', 'score', 'total_wins', 'total_losses', 'total_reward')' --num_episodes=75000 --update_every=10 --learning_rate=0.4 --epsilon=0.4 --gamma=0.5 --game=Wythoff15x15 --debug=False --anneal=True --return_none=True --save_model=True --seed={1}" ::: \
+		"run_azad.py wythoff_stumbler --save=$(DATA_PATH)/wythoff/exp13/run_{1} --monitor='('episode', 'loss', 'score', 'total_wins', 'total_losses', 'total_reward', 'total_op_moves', 'total_moves', 'total_op_move_opportunities')' --num_episodes=75000 --update_every=10 --learning_rate=0.4 --epsilon=0.4 --gamma=0.5 --game=Wythoff15x15 --debug=False --anneal=True --return_none=True --save_model=True --seed={1}" ::: \
 		{1..100}
 
 # SS
@@ -326,7 +326,7 @@ wythoff_exp14:
 	parallel -j 8 -v \
 		--joblog '$(DATA_PATH)/wythoff/exp14/exp14.parallel.log' \
 		--nice 19 --delay 2 \
-		"run_azad.py wythoff_stumbler_strategist --save=$(DATA_PATH)/wythoff/exp14/run_{1} --monitor='('episode', 'influence')' --stumbler_monitor='('episode', 'loss', 'score', 'total_wins', 'total_losses', 'total_reward')' --strategist_monitor='('episode', 'loss', 'mae', 'mae_euclid')' --num_episodes=150 --update_every=10 --learning_rate_influence=0.2 --num_stumbles=500 --learning_rate_stumbler=0.4 --stumbler_game=Wythoff15x15 --epsilon=0.4 --anneal=True --gamma=0.5 --num_strategies=500 --learning_rate_strategist=0.025 --strategist_game=Wythoff50x50 --cold_threshold=-0.2 --hot_threshold=0.2 --hot_value=-1 --cold_value=1 --debug=False --save_model=True --return_none=True --debug=False --seed={1}" ::: \
+		"run_azad.py wythoff_stumbler_strategist --save=$(DATA_PATH)/wythoff/exp14/run_{1} --monitor='('episode', 'influence')' --stumbler_monitor='('episode', 'loss', 'score', 'total_wins', 'total_losses', 'total_reward', 'total_op_moves', 'total_moves', 'total_op_move_opportunities')' --strategist_monitor='('episode', 'loss', 'mae', 'mae_euclid')' --num_episodes=150 --update_every=10 --learning_rate_influence=0.2 --num_stumbles=500 --learning_rate_stumbler=0.4 --stumbler_game=Wythoff15x15 --epsilon=0.4 --anneal=True --gamma=0.5 --num_strategies=500 --learning_rate_strategist=0.025 --strategist_game=Wythoff50x50 --cold_threshold=-0.2 --hot_threshold=0.2 --hot_value=-1 --cold_value=1 --debug=False --save_model=True --return_none=True --debug=False --seed={1}" ::: \
 		{1..100}
 
 
@@ -1626,7 +1626,7 @@ wythoff_exp14_replay:
 	parallel -j 8 -v \
 		--joblog '$(DATA_PATH)/wythoff/exp14_replay/exp14_replay.parallel.log' \
 		--nice 19 --delay 2 \
-		"run_azad.py wythoff_stumbler_strategist --save=$(DATA_PATH)/wythoff/exp14_replay/run_{1} --monitor='('episode', 'influence')' --stumbler_monitor='('episode', 'loss', 'score', 'total_wins', 'total_losses', 'total_reward')' --strategist_monitor='('episode', 'loss', 'mae', 'mae_euclid')' --num_episodes=150 --update_every=10 --learning_rate_influence=0.2 --num_stumbles=500 --learning_rate_stumbler=0.4 --stumbler_game=Wythoff15x15 --epsilon=0.4 --anneal=True --gamma=0.5 --num_strategies=500 --learning_rate_strategist=0.025 --strategist_game=Wythoff50x50 --cold_threshold=-0.2 --hot_threshold=0.2 --hot_value=-1 --cold_value=1 --debug=False --save_model=True --return_none=True --debug=False --strategy='replay' --seed={1}" ::: \
+		"run_azad.py wythoff_stumbler_strategist --save=$(DATA_PATH)/wythoff/exp14_replay/run_{1} --monitor='('episode', 'influence')' --stumbler_monitor='('episode', 'loss', 'score', 'total_wins', 'total_losses', 'total_reward', 'total_op_moves', 'total_moves', 'total_op_move_opportunities')' --strategist_monitor='('episode', 'loss', 'mae', 'mae_euclid')' --num_episodes=150 --update_every=10 --learning_rate_influence=0.2 --num_stumbles=500 --learning_rate_stumbler=0.4 --stumbler_game=Wythoff15x15 --epsilon=0.4 --anneal=True --gamma=0.5 --num_strategies=500 --learning_rate_strategist=0.025 --strategist_game=Wythoff50x50 --cold_threshold=-0.2 --hot_threshold=0.2 --hot_value=-1 --cold_value=1 --debug=False --save_model=True --return_none=True --debug=False --strategy='replay' --seed={1}" ::: \
 		{1..100}
 
 
@@ -1636,7 +1636,7 @@ wythoff_exp14_perfect_replay:
 	parallel -j 8 -v \
 		--joblog '$(DATA_PATH)/wythoff/exp14_perfect_replay/exp14_perfect_replay.parallel.log' \
 		--nice 19 --delay 2 \
-		"run_azad.py wythoff_stumbler_strategist --save=$(DATA_PATH)/wythoff/exp14_perfect_replay/run_{1} --monitor='('episode', 'influence')' --stumbler_monitor='('episode', 'loss', 'score', 'total_wins', 'total_losses', 'total_reward')' --strategist_monitor='('episode', 'loss', 'mae', 'mae_euclid')' --num_episodes=150 --update_every=10 --learning_rate_influence=0.2 --num_stumbles=500 --learning_rate_stumbler=0.4 --stumbler_game=Wythoff15x15 --epsilon=0.4 --anneal=True --gamma=0.5 --num_strategies=500 --learning_rate_strategist=0.025 --strategist_game=Wythoff50x50 --cold_threshold=-0.2 --hot_threshold=0.2 --hot_value=-1 --cold_value=1 --debug=False --save_model=True --return_none=True --debug=False --strategy='perfect_replay' --seed={1}" ::: \
-		{21..100}
+		"run_azad.py wythoff_stumbler_strategist --save=$(DATA_PATH)/wythoff/exp14_perfect_replay/run_{1} --monitor='('episode', 'influence')' --stumbler_monitor='('episode', 'loss', 'score', 'total_wins', 'total_losses', 'total_reward', 'total_op_moves', 'total_moves', 'total_op_move_opportunities')' --strategist_monitor='('episode', 'loss', 'mae', 'mae_euclid')' --num_episodes=150 --update_every=10 --learning_rate_influence=0.2 --num_stumbles=500 --learning_rate_stumbler=0.4 --stumbler_game=Wythoff15x15 --epsilon=0.4 --anneal=True --gamma=0.5 --num_strategies=500 --learning_rate_strategist=0.025 --strategist_game=Wythoff50x50 --cold_threshold=-0.2 --hot_threshold=0.2 --hot_value=-1 --cold_value=1 --debug=False --save_model=True --return_none=True --debug=False --strategy='perfect_replay' --seed={1}" ::: \
+		{1..100}
 
 

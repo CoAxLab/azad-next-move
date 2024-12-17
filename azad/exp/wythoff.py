@@ -173,6 +173,9 @@ def wythoff_stumbler_strategist(num_episodes=10,
     total_reward_a = 0.0
     total_wins   = 0 # across all learning
     total_losses = 0
+    total_op_moves = 0
+    total_moves = 0
+    total_op_move_opportunities = 0
     n_wins   = 0 # across each set of episodes
     n_losses = 0
     for episode in range(num_episodes):
@@ -181,7 +184,7 @@ def wythoff_stumbler_strategist(num_episodes=10,
         if save is not None:
             save_a = save + "_episode{}_stumbler".format(episode)
 
-        (player, opponent), (score_a, total_reward_a), (n_wins, n_losses), (total_wins, total_losses) = wythoff_stumbler(
+        (player, opponent), (score_a, total_reward_a), (n_wins, n_losses), (total_wins, total_losses), (total_op_moves, total_moves, total_op_move_opportunities) = wythoff_stumbler(
             num_episodes=num_stumbles,
             game=stumbler_game,
             epsilon=epsilon,
@@ -207,7 +210,10 @@ def wythoff_stumbler_strategist(num_episodes=10,
             use_fixed_opponent=use_fixed_opponent,
             fixed_opponent_tau=fixed_opponent_tau,
             total_wins   = total_wins,
-            total_losses = total_losses)
+            total_losses = total_losses,
+            total_op_moves = total_op_moves,
+            total_moves = total_moves,
+            total_op_move_opportunities = total_op_move_opportunities)
 
         # Strategist
         if not optimal_strategist:
@@ -363,7 +369,10 @@ def wythoff_stumbler(num_episodes=10,
                      use_fixed_opponent=True,
                      fixed_opponent_tau=0.55,
                      total_wins=0,
-                     total_losses=0):
+                     total_losses=0,
+                     total_op_moves=0,
+                     total_moves=0,
+                     total_op_move_opportunities=0):
     """Learn to play Wythoff's w/ e-greedy random exploration.
     
     Note: Learning is based on a player-opponent joint action formalism 
@@ -484,10 +493,22 @@ def wythoff_stumbler(num_episodes=10,
             # Analyze it...
             best = 0.0
             if env.get_cold_move_available(x, y, available):
+                total_op_move_opportunities += 1
+                # total_moves += 1 ###
+                # print('cold move available')
                 if move in env.get_locate_cold_moves(x, y, available):
+                    # total_op_moves += 1 ###
+                    # print('move is optimal')
                     best = 1.0
-                score += (best - score) / (episode + 1)
-
+                score += (best - score) / (total_op_move_opportunities)
+                # print(f'best: {best}')
+                # print(f'total_moves: {total_moves}')
+                # print(f'score: {score}')
+            
+            total_moves += 1
+            if move in env.get_locate_cold_moves(x, y, available):
+                total_op_moves += 1
+            
             # PLAY THE MOVE
             (x, y, board, available), reward, done, _ = env.step(move)
             board = tuple(flatten_board(board))
@@ -570,7 +591,15 @@ def wythoff_stumbler(num_episodes=10,
 
         # ----------------------------------------------------------------
         # Learn by unrolling the last game...
-
+        
+        # print()
+        # print("Test")
+        # print(f"total_op_moves: {total_op_moves}")
+        # print(f"total_moves: {total_moves}")
+        # print(f"score: {score}")
+        # print()
+        # quit()
+        
         # PLAYER (model)
         s_idx = np.arange(0, steps - 1, 2)
         for i in s_idx:
@@ -699,7 +728,7 @@ def wythoff_stumbler(num_episodes=10,
     if tensorboard:
         writer.close()
 
-    result = (model, opponent), (score, total_reward), (n_wins, n_losses), (total_wins, total_losses)
+    result = (model, opponent), (score, total_reward), (n_wins, n_losses), (total_wins, total_losses), (total_op_moves, total_moves, total_op_move_opportunities)
     if return_none:
         result = None
 
