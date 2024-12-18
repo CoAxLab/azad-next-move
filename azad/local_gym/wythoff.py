@@ -35,7 +35,10 @@ def locate_all_cold_moves(m, n):
         if (nk < m) and (mk < n):
             moves.append((mk, nk))
             moves.append((nk, mk))
-
+    
+    if m == 0 or n == 0 or m==n:
+        moves.append((0, 0))
+            
     return moves
 
 

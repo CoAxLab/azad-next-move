@@ -489,21 +489,25 @@ def wythoff_stumbler(num_episodes=10,
                 move_i = np.random.randint(0, len(available))
 
             move = available[move_i]
+            
+            # print()
+            # print(f'(x, y): ({x}, {y})')
+            # print(f'available moves: {available}')
 
             # Analyze it...
             best = 0.0
             if env.get_cold_move_available(x, y, available):
                 total_op_move_opportunities += 1
-                # total_moves += 1 ###
                 # print('cold move available')
                 if move in env.get_locate_cold_moves(x, y, available):
-                    # total_op_moves += 1 ###
                     # print('move is optimal')
                     best = 1.0
                 score += (best - score) / (total_op_move_opportunities)
                 # print(f'best: {best}')
                 # print(f'total_moves: {total_moves}')
                 # print(f'score: {score}')
+            
+            # print(f'move: {move}')
             
             total_moves += 1
             if move in env.get_locate_cold_moves(x, y, available):
