@@ -311,7 +311,7 @@ wythoff_exp13:
 	parallel -j 8 -v \
 		--joblog '$(DATA_PATH)/wythoff/exp13/exp13.parallel.log' \
 		--nice 19 --delay 2 \
-		"run_azad.py wythoff_stumbler --save=$(DATA_PATH)/wythoff/exp13/run_{1} --monitor='('episode', 'loss', 'score', 'total_wins', 'total_losses', 'total_reward', 'total_op_moves', 'total_moves', 'total_op_move_opportunities')' --num_episodes=75000 --update_every=10 --learning_rate=0.4 --epsilon=0.4 --gamma=0.5 --game=Wythoff15x15 --debug=False --anneal=True --return_none=True --save_model=True --seed={1}" ::: \
+		"run_azad.py wythoff_stumbler --save=$(DATA_PATH)/wythoff/exp13/run_{1} --monitor='('episode', 'loss', 'score', 'total_wins', 'total_losses', 'total_reward', 'total_op_moves', 'total_moves', 'total_op_move_opportunities')' --num_episodes=20000 --update_every=10 --learning_rate=0.4 --epsilon=0.4 --gamma=0.5 --game=Wythoff15x15 --debug=False --anneal=True --return_none=True --save_model=True --seed={1}" ::: \
 		{1..100}
 
 # SS
@@ -326,8 +326,8 @@ wythoff_exp14:
 	parallel -j 8 -v \
 		--joblog '$(DATA_PATH)/wythoff/exp14/exp14.parallel.log' \
 		--nice 19 --delay 2 \
-		"run_azad.py wythoff_stumbler_strategist --save=$(DATA_PATH)/wythoff/exp14/run_{1} --monitor='('episode', 'influence')' --stumbler_monitor='('episode', 'loss', 'score', 'total_wins', 'total_losses', 'total_reward', 'total_op_moves', 'total_moves', 'total_op_move_opportunities')' --strategist_monitor='('episode', 'loss', 'mae', 'mae_euclid')' --num_episodes=150 --update_every=10 --learning_rate_influence=0.2 --num_stumbles=500 --learning_rate_stumbler=0.4 --stumbler_game=Wythoff15x15 --epsilon=0.4 --anneal=True --gamma=0.5 --num_strategies=500 --learning_rate_strategist=0.025 --strategist_game=Wythoff50x50 --cold_threshold=-0.2 --hot_threshold=0.2 --hot_value=-1 --cold_value=1 --debug=False --save_model=True --return_none=True --debug=False --seed={1}" ::: \
-		{1..1}
+		"run_azad.py wythoff_stumbler_strategist --save=$(DATA_PATH)/wythoff/exp14/run_{1} --monitor='('episode', 'influence')' --stumbler_monitor='('episode', 'loss', 'score', 'total_wins', 'total_losses', 'total_reward', 'total_op_moves', 'total_moves', 'total_op_move_opportunities')' --strategist_monitor='('episode', 'loss', 'mae', 'mae_euclid')' --num_episodes=40 --update_every=10 --learning_rate_influence=0.2 --num_stumbles=500 --learning_rate_stumbler=0.4 --stumbler_game=Wythoff15x15 --epsilon=0.4 --anneal=True --gamma=0.5 --num_strategies=500 --learning_rate_strategist=0.025 --strategist_game=Wythoff50x50 --cold_threshold=-0.2 --hot_threshold=0.2 --hot_value=-1 --cold_value=1 --debug=False --save_model=True --return_none=True --debug=False --seed={1}" ::: \
+		{1..100}
 
 
 # --- Heuristic controls
@@ -1626,7 +1626,7 @@ wythoff_exp14_replay:
 	parallel -j 8 -v \
 		--joblog '$(DATA_PATH)/wythoff/exp14_replay/exp14_replay.parallel.log' \
 		--nice 19 --delay 2 \
-		"run_azad.py wythoff_stumbler_strategist --save=$(DATA_PATH)/wythoff/exp14_replay/run_{1} --monitor='('episode', 'influence')' --stumbler_monitor='('episode', 'loss', 'score', 'total_wins', 'total_losses', 'total_reward', 'total_op_moves', 'total_moves', 'total_op_move_opportunities')' --strategist_monitor='('episode', 'loss', 'mae', 'mae_euclid')' --num_episodes=150 --update_every=10 --learning_rate_influence=0.2 --num_stumbles=500 --learning_rate_stumbler=0.4 --stumbler_game=Wythoff15x15 --epsilon=0.4 --anneal=True --gamma=0.5 --num_strategies=500 --learning_rate_strategist=0.025 --strategist_game=Wythoff50x50 --cold_threshold=-0.2 --hot_threshold=0.2 --hot_value=-1 --cold_value=1 --debug=False --save_model=True --return_none=True --debug=False --strategy='replay' --seed={1}" ::: \
+		"run_azad.py wythoff_stumbler_strategist --save=$(DATA_PATH)/wythoff/exp14_replay/run_{1} --monitor='('episode', 'influence')' --stumbler_monitor='('episode', 'loss', 'score', 'total_wins', 'total_losses', 'total_reward', 'total_op_moves', 'total_moves', 'total_op_move_opportunities')' --strategist_monitor='('episode', 'loss', 'mae', 'mae_euclid')' --num_episodes=40 --update_every=10 --learning_rate_influence=0.2 --num_stumbles=500 --learning_rate_stumbler=0.4 --stumbler_game=Wythoff15x15 --epsilon=0.4 --anneal=True --gamma=0.5 --num_strategies=500 --learning_rate_strategist=0.025 --strategist_game=Wythoff50x50 --cold_threshold=-0.2 --hot_threshold=0.2 --hot_value=-1 --cold_value=1 --debug=False --save_model=True --return_none=True --debug=False --strategy='replay' --seed={1}" ::: \
 		{1..100}
 
 
@@ -1639,4 +1639,159 @@ wythoff_exp14_perfect_replay:
 		"run_azad.py wythoff_stumbler_strategist --save=$(DATA_PATH)/wythoff/exp14_perfect_replay/run_{1} --monitor='('episode', 'influence')' --stumbler_monitor='('episode', 'loss', 'score', 'total_wins', 'total_losses', 'total_reward', 'total_op_moves', 'total_moves', 'total_op_move_opportunities')' --strategist_monitor='('episode', 'loss', 'mae', 'mae_euclid')' --num_episodes=150 --update_every=10 --learning_rate_influence=0.2 --num_stumbles=500 --learning_rate_stumbler=0.4 --stumbler_game=Wythoff15x15 --epsilon=0.4 --anneal=True --gamma=0.5 --num_strategies=500 --learning_rate_strategist=0.025 --strategist_game=Wythoff50x50 --cold_threshold=-0.2 --hot_threshold=0.2 --hot_value=-1 --cold_value=1 --debug=False --save_model=True --return_none=True --debug=False --strategy='perfect_replay' --seed={1}" ::: \
 		{1..100}
 
+
+# Stumblers w/ various Taus
+wythoff_exp13_tau_0.001:
+	-rm -rf $(DATA_PATH)/wythoff/exp13_tau_0.001
+	-mkdir $(DATA_PATH)/wythoff/exp13_tau_0.001
+	sleep 5  # Wait for tensorboard to notice the deletion
+		# and search it.
+	parallel -j 8 -v \
+		--joblog '$(DATA_PATH)/wythoff/exp13_tau_0.001/exp13_tau_0.001.parallel.log' \
+		--nice 19 --delay 2 \
+		"run_azad.py wythoff_stumbler --save=$(DATA_PATH)/wythoff/exp13_tau_0.001/run_{1} --monitor='('episode', 'loss', 'score', 'total_wins', 'total_losses', 'total_reward', 'total_op_moves', 'total_moves', 'total_op_move_opportunities')' --num_episodes=20000 --update_every=10 --learning_rate=0.4 --epsilon=0.4 --gamma=0.5 --game=Wythoff15x15 --debug=False --anneal=True --return_none=True --save_model=True --fixed_opponent_tau=0.001 --seed={1}" ::: \
+		{1..1}
+
+wythoff_exp13_tau_0.002:
+	-rm -rf $(DATA_PATH)/wythoff/exp13_tau_0.002
+	-mkdir $(DATA_PATH)/wythoff/exp13_tau_0.002
+	sleep 5  # Wait for tensorboard to notice the deletion
+		# and search it.
+	parallel -j 8 -v \
+		--joblog '$(DATA_PATH)/wythoff/exp13_tau_0.002/exp13_tau_0.002.parallel.log' \
+		--nice 19 --delay 2 \
+		"run_azad.py wythoff_stumbler --save=$(DATA_PATH)/wythoff/exp13_tau_0.002/run_{1} --monitor='('episode', 'loss', 'score', 'total_wins', 'total_losses', 'total_reward', 'total_op_moves', 'total_moves', 'total_op_move_opportunities')' --num_episodes=20000 --update_every=10 --learning_rate=0.4 --epsilon=0.4 --gamma=0.5 --game=Wythoff15x15 --debug=False --anneal=True --return_none=True --save_model=True --fixed_opponent_tau=0.002 --seed={1}" ::: \
+		{1..5}
+
+wythoff_exp13_tau_0.005:
+	-rm -rf $(DATA_PATH)/wythoff/exp13_tau_0.005
+	-mkdir $(DATA_PATH)/wythoff/exp13_tau_0.005
+	sleep 5  # Wait for tensorboard to notice the deletion
+		# and search it.
+	parallel -j 8 -v \
+		--joblog '$(DATA_PATH)/wythoff/exp13_tau_0.005/exp13_tau_0.005.parallel.log' \
+		--nice 19 --delay 2 \
+		"run_azad.py wythoff_stumbler --save=$(DATA_PATH)/wythoff/exp13_tau_0.005/run_{1} --monitor='('episode', 'loss', 'score', 'total_wins', 'total_losses', 'total_reward', 'total_op_moves', 'total_moves', 'total_op_move_opportunities')' --num_episodes=20000 --update_every=10 --learning_rate=0.4 --epsilon=0.4 --gamma=0.5 --game=Wythoff15x15 --debug=False --anneal=True --return_none=True --save_model=True --fixed_opponent_tau=0.005 --seed={1}" ::: \
+		{1..1}
+
+wythoff_exp13_tau_0.009:
+	-rm -rf $(DATA_PATH)/wythoff/exp13_tau_0.009
+	-mkdir $(DATA_PATH)/wythoff/exp13_tau_0.009
+	sleep 5  # Wait for tensorboard to notice the deletion
+		# and search it.
+	parallel -j 8 -v \
+		--joblog '$(DATA_PATH)/wythoff/exp13_tau_0.009/exp13_tau_0.009.parallel.log' \
+		--nice 19 --delay 2 \
+		"run_azad.py wythoff_stumbler --save=$(DATA_PATH)/wythoff/exp13_tau_0.009/run_{1} --monitor='('episode', 'loss', 'score', 'total_wins', 'total_losses', 'total_reward', 'total_op_moves', 'total_moves', 'total_op_move_opportunities')' --num_episodes=20000 --update_every=10 --learning_rate=0.4 --epsilon=0.4 --gamma=0.5 --game=Wythoff15x15 --debug=False --anneal=True --return_none=True --save_model=True --fixed_opponent_tau=0.009 --seed={1}" ::: \
+		{1..1}
+
+wythoff_exp13_tau_0.01:
+	-rm -rf $(DATA_PATH)/wythoff/exp13_tau_0.01
+	-mkdir $(DATA_PATH)/wythoff/exp13_tau_0.01
+	sleep 5  # Wait for tensorboard to notice the deletion
+		# and search it.
+	parallel -j 8 -v \
+		--joblog '$(DATA_PATH)/wythoff/exp13_tau_0.01/exp13_tau_0.01.parallel.log' \
+		--nice 19 --delay 2 \
+		"run_azad.py wythoff_stumbler --save=$(DATA_PATH)/wythoff/exp13_tau_0.01/run_{1} --monitor='('episode', 'loss', 'score', 'total_wins', 'total_losses', 'total_reward', 'total_op_moves', 'total_moves', 'total_op_move_opportunities')' --num_episodes=20000 --update_every=10 --learning_rate=0.4 --epsilon=0.4 --gamma=0.5 --game=Wythoff15x15 --debug=False --anneal=True --return_none=True --save_model=True --fixed_opponent_tau=0.01 --seed={1}" ::: \
+		{1..1}
+
+wythoff_exp13_tau_0.05:
+	-rm -rf $(DATA_PATH)/wythoff/exp13_tau_0.05
+	-mkdir $(DATA_PATH)/wythoff/exp13_tau_0.05
+	sleep 5  # Wait for tensorboard to notice the deletion
+		# and search it.
+	parallel -j 8 -v \
+		--joblog '$(DATA_PATH)/wythoff/exp13_tau_0.05/exp13_tau_0.05.parallel.log' \
+		--nice 19 --delay 2 \
+		"run_azad.py wythoff_stumbler --save=$(DATA_PATH)/wythoff/exp13_tau_0.05/run_{1} --monitor='('episode', 'loss', 'score', 'total_wins', 'total_losses', 'total_reward', 'total_op_moves', 'total_moves', 'total_op_move_opportunities')' --num_episodes=20000 --update_every=10 --learning_rate=0.4 --epsilon=0.4 --gamma=0.5 --game=Wythoff15x15 --debug=False --anneal=True --return_none=True --save_model=True --fixed_opponent_tau=0.05 --seed={1}" ::: \
+		{1..5}
+
+wythoff_exp13_tau_0.10:
+	-rm -rf $(DATA_PATH)/wythoff/exp13_tau_0.10
+	-mkdir $(DATA_PATH)/wythoff/exp13_tau_0.10
+	sleep 5  # Wait for tensorboard to notice the deletion
+		# and search it.
+	parallel -j 8 -v \
+		--joblog '$(DATA_PATH)/wythoff/exp13_tau_0.10/exp13_tau_0.10.parallel.log' \
+		--nice 19 --delay 2 \
+		"run_azad.py wythoff_stumbler --save=$(DATA_PATH)/wythoff/exp13_tau_0.10/run_{1} --monitor='('episode', 'loss', 'score', 'total_wins', 'total_losses', 'total_reward', 'total_op_moves', 'total_moves', 'total_op_move_opportunities')' --num_episodes=20000 --update_every=10 --learning_rate=0.4 --epsilon=0.4 --gamma=0.5 --game=Wythoff15x15 --debug=False --anneal=True --return_none=True --save_model=True --fixed_opponent_tau=0.10 --seed={1}" ::: \
+		{1..1}
+
+wythoff_exp13_tau_0.20:
+	-rm -rf $(DATA_PATH)/wythoff/exp13_tau_0.20
+	-mkdir $(DATA_PATH)/wythoff/exp13_tau_0.20
+	sleep 5  # Wait for tensorboard to notice the deletion
+		# and search it.
+	parallel -j 8 -v \
+		--joblog '$(DATA_PATH)/wythoff/exp13_tau_0.20/exp13_tau_0.20.parallel.log' \
+		--nice 19 --delay 2 \
+		"run_azad.py wythoff_stumbler --save=$(DATA_PATH)/wythoff/exp13_tau_0.20/run_{1} --monitor='('episode', 'loss', 'score', 'total_wins', 'total_losses', 'total_reward', 'total_op_moves', 'total_moves', 'total_op_move_opportunities')' --num_episodes=20000 --update_every=10 --learning_rate=0.4 --epsilon=0.4 --gamma=0.5 --game=Wythoff15x15 --debug=False --anneal=True --return_none=True --save_model=True --fixed_opponent_tau=0.20 --seed={1}" ::: \
+		{1..1}
+
+wythoff_exp13_tau_0.30:
+	-rm -rf $(DATA_PATH)/wythoff/exp13_tau_0.30
+	-mkdir $(DATA_PATH)/wythoff/exp13_tau_0.30
+	sleep 5  # Wait for tensorboard to notice the deletion
+		# and search it.
+	parallel -j 8 -v \
+		--joblog '$(DATA_PATH)/wythoff/exp13_tau_0.30/exp13_tau_0.30.parallel.log' \
+		--nice 19 --delay 2 \
+		"run_azad.py wythoff_stumbler --save=$(DATA_PATH)/wythoff/exp13_tau_0.30/run_{1} --monitor='('episode', 'loss', 'score', 'total_wins', 'total_losses', 'total_reward', 'total_op_moves', 'total_moves', 'total_op_move_opportunities')' --num_episodes=20000 --update_every=10 --learning_rate=0.4 --epsilon=0.4 --gamma=0.5 --game=Wythoff15x15 --debug=False --anneal=True --return_none=True --save_model=True --fixed_opponent_tau=0.30 --seed={1}" ::: \
+		{1..1}
+
+wythoff_exp13_tau_0.40:
+	-rm -rf $(DATA_PATH)/wythoff/exp13_tau_0.40
+	-mkdir $(DATA_PATH)/wythoff/exp13_tau_0.40
+	sleep 5  # Wait for tensorboard to notice the deletion
+		# and search it.
+	parallel -j 8 -v \
+		--joblog '$(DATA_PATH)/wythoff/exp13_tau_0.40/exp13_tau_0.40.parallel.log' \
+		--nice 19 --delay 2 \
+		"run_azad.py wythoff_stumbler --save=$(DATA_PATH)/wythoff/exp13_tau_0.40/run_{1} --monitor='('episode', 'loss', 'score', 'total_wins', 'total_losses', 'total_reward', 'total_op_moves', 'total_moves', 'total_op_move_opportunities')' --num_episodes=20000 --update_every=10 --learning_rate=0.4 --epsilon=0.4 --gamma=0.5 --game=Wythoff15x15 --debug=False --anneal=True --return_none=True --save_model=True --fixed_opponent_tau=0.40 --seed={1}" ::: \
+		{1..1}
+ 
+wythoff_exp13_tau_0.50:
+	-rm -rf $(DATA_PATH)/wythoff/exp13_tau_0.50
+	-mkdir $(DATA_PATH)/wythoff/exp13_tau_0.50
+	sleep 5  # Wait for tensorboard to notice the deletion
+		# and search it.
+	parallel -j 8 -v \
+		--joblog '$(DATA_PATH)/wythoff/exp13_tau_0.50/exp13_tau_0.50.parallel.log' \
+		--nice 19 --delay 2 \
+		"run_azad.py wythoff_stumbler --save=$(DATA_PATH)/wythoff/exp13_tau_0.50/run_{1} --monitor='('episode', 'loss', 'score', 'total_wins', 'total_losses', 'total_reward', 'total_op_moves', 'total_moves', 'total_op_move_opportunities')' --num_episodes=20000 --update_every=10 --learning_rate=0.4 --epsilon=0.4 --gamma=0.5 --game=Wythoff15x15 --debug=False --anneal=True --return_none=True --save_model=True --fixed_opponent_tau=0.50 --seed={1}" ::: \
+		{1..1}
+
+wythoff_exp13_tau_0.60:
+	-rm -rf $(DATA_PATH)/wythoff/exp13_tau_0.60
+	-mkdir $(DATA_PATH)/wythoff/exp13_tau_0.60
+	sleep 5  # Wait for tensorboard to notice the deletion
+		# and search it.
+	parallel -j 8 -v \
+		--joblog '$(DATA_PATH)/wythoff/exp13_tau_0.60/exp13_tau_0.60.parallel.log' \
+		--nice 19 --delay 2 \
+		"run_azad.py wythoff_stumbler --save=$(DATA_PATH)/wythoff/exp13_tau_0.60/run_{1} --monitor='('episode', 'loss', 'score', 'total_wins', 'total_losses', 'total_reward', 'total_op_moves', 'total_moves', 'total_op_move_opportunities')' --num_episodes=20000 --update_every=10 --learning_rate=0.4 --epsilon=0.4 --gamma=0.5 --game=Wythoff15x15 --debug=False --anneal=True --return_none=True --save_model=True --fixed_opponent_tau=0.60 --seed={1}" ::: \
+		{1..1}
+
+wythoff_exp13_tau_0.70:
+	-rm -rf $(DATA_PATH)/wythoff/exp13_tau_0.70
+	-mkdir $(DATA_PATH)/wythoff/exp13_tau_0.70
+	sleep 5  # Wait for tensorboard to notice the deletion
+		# and search it.
+	parallel -j 8 -v \
+		--joblog '$(DATA_PATH)/wythoff/exp13_tau_0.70/exp13_tau_0.70.parallel.log' \
+		--nice 19 --delay 2 \
+		"run_azad.py wythoff_stumbler --save=$(DATA_PATH)/wythoff/exp13_tau_0.70/run_{1} --monitor='('episode', 'loss', 'score', 'total_wins', 'total_losses', 'total_reward', 'total_op_moves', 'total_moves', 'total_op_move_opportunities')' --num_episodes=20000 --update_every=10 --learning_rate=0.4 --epsilon=0.4 --gamma=0.5 --game=Wythoff15x15 --debug=False --anneal=True --return_none=True --save_model=True --fixed_opponent_tau=0.70 --seed={1}" ::: \
+		{1..1}
+
+wythoff_exp13_tau_1:
+	-rm -rf $(DATA_PATH)/wythoff/exp13_tau_1
+	-mkdir $(DATA_PATH)/wythoff/exp13_tau_1
+	sleep 5  # Wait for tensorboard to notice the deletion
+		# and search it.
+	parallel -j 8 -v \
+		--joblog '$(DATA_PATH)/wythoff/exp13_tau_1/exp13_tau_1.parallel.log' \
+		--nice 19 --delay 2 \
+		"run_azad.py wythoff_stumbler --save=$(DATA_PATH)/wythoff/exp13_tau_1/run_{1} --monitor='('episode', 'loss', 'score', 'total_wins', 'total_losses', 'total_reward', 'total_op_moves', 'total_moves', 'total_op_move_opportunities')' --num_episodes=20000 --update_every=10 --learning_rate=0.4 --epsilon=0.4 --gamma=0.5 --game=Wythoff15x15 --debug=False --anneal=True --return_none=True --save_model=True --fixed_opponent_tau=1 --seed={1}" ::: \
+		{1..1}
 

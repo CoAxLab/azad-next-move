@@ -109,7 +109,7 @@ def wythoff_stumbler_strategist(num_episodes=10,
                                 debug=False,
                                 strategy='imagination', # other option 'replay'
                                 use_fixed_opponent=True,
-                                fixed_opponent_tau=0.55):
+                                fixed_opponent_tau=0.05): #0.55
     """Learn Wythoff's with a stumbler-strategist network"""
 
     # -----------------------------------------------------------------------
@@ -367,7 +367,7 @@ def wythoff_stumbler(num_episodes=10,
                      seed=None,
                      strategy='imagination',
                      use_fixed_opponent=True,
-                     fixed_opponent_tau=0.55,
+                     fixed_opponent_tau=0.05, #0.55
                      total_wins=0,
                      total_losses=0,
                      total_op_moves=0,
@@ -378,7 +378,7 @@ def wythoff_stumbler(num_episodes=10,
     Note: Learning is based on a player-opponent joint action formalism 
     and tabular Q-learning.
     """
-
+    # print(f'fixed_opponent_tau: {fixed_opponent_tau}')
     # ------------------------------------------------------------------------
     # Init env
     if tensorboard is not None:
@@ -457,88 +457,96 @@ def wythoff_stumbler(num_episodes=10,
         # Play!
         done = False
         player_win = False
+        player_starts = np.random.choice(2) # randomly assign starting player
         while not done:
-            # PLAYER CHOOSES A MOVE
-            try:
-                Qs_episode = add_bias_board(model[board], available,
-                                            bias_board, influence)
-                move_i = epsilon_greedy(Qs_episode,
-                                        epsilon=epsilon_e,
-                                        mode='numpy')
+            
+            # skip to opponent starting if on the 1st move and !player_starts
+            if steps > 1 or player_starts:
+                # if steps == 1:
+                #     print(f'player_starts: {player_starts}')
+                # print(f'steps: {steps}')
                 
-                # if strategy=='replay':
-                #     stumb_Qs = add_bias_board(model[board], available,
-                #                               None, 0) #influence zero
-                #     stumb_top_move = epsilon_greedy(stumb_Qs,
-                #                                     epsilon=0,
-                #                                     mode='numpy')
-                #     if stumb_top_move == move_i: stumb_top_moves += 1
+                # PLAYER CHOOSES A MOVE
+                try:
+                    Qs_episode = add_bias_board(model[board], available,
+                                                bias_board, influence)
+                    move_i = epsilon_greedy(Qs_episode,
+                                            epsilon=epsilon_e,
+                                            mode='numpy')
                     
-                #     # blank_board = np.ones(len(available)) * default_Q
-                #     # strat_Qs = add_bias_board(blank_board, available,
-                #     #                           bias_board, 1)
-                #     strat_Qs = add_bias_board(model[board], available,
-                #                               bias_board, (influence + 1) / 2)
-                #     strat_top_move = epsilon_greedy(strat_Qs,
-                #                                     epsilon=0,
-                #                                     mode='numpy')
-                #     if strat_top_move == move_i: strat_top_moves += 1
+                    # if strategy=='replay':
+                    #     stumb_Qs = add_bias_board(model[board], available,
+                    #                               None, 0) #influence zero
+                    #     stumb_top_move = epsilon_greedy(stumb_Qs,
+                    #                                     epsilon=0,
+                    #                                     mode='numpy')
+                    #     if stumb_top_move == move_i: stumb_top_moves += 1
+                        
+                    #     # blank_board = np.ones(len(available)) * default_Q
+                    #     # strat_Qs = add_bias_board(blank_board, available,
+                    #     #                           bias_board, 1)
+                    #     strat_Qs = add_bias_board(model[board], available,
+                    #                               bias_board, (influence + 1) / 2)
+                    #     strat_top_move = epsilon_greedy(strat_Qs,
+                    #                                     epsilon=0,
+                    #                                     mode='numpy')
+                    #     if strat_top_move == move_i: strat_top_moves += 1
+                    
+                except KeyError:
+                    model[board] = np.ones(len(available)) * default_Q
+                    move_i = np.random.randint(0, len(available))
+    
+                move = available[move_i]
                 
-            except KeyError:
-                model[board] = np.ones(len(available)) * default_Q
-                move_i = np.random.randint(0, len(available))
-
-            move = available[move_i]
-            
-            # print()
-            # print(f'(x, y): ({x}, {y})')
-            # print(f'available moves: {available}')
-
-            # Analyze it...
-            best = 0.0
-            if env.get_cold_move_available(x, y, available):
-                total_op_move_opportunities += 1
-                # print('cold move available')
+                # print()
+                # print(f'(x, y): ({x}, {y})')
+                # print(f'available moves: {available}')
+    
+                # Analyze it...
+                best = 0.0
+                if env.get_cold_move_available(x, y, available):
+                    total_op_move_opportunities += 1
+                    # print('cold move available')
+                    if move in env.get_locate_cold_moves(x, y, available):
+                        # print('move is optimal')
+                        best = 1.0
+                    score += (best - score) / (total_op_move_opportunities)
+                    # print(f'best: {best}')
+                    # print(f'total_moves: {total_moves}')
+                    # print(f'score: {score}')
+                
+                # print(f'move: {move}')
+                
+                total_moves += 1
                 if move in env.get_locate_cold_moves(x, y, available):
-                    # print('move is optimal')
-                    best = 1.0
-                score += (best - score) / (total_op_move_opportunities)
-                # print(f'best: {best}')
-                # print(f'total_moves: {total_moves}')
-                # print(f'score: {score}')
-            
-            # print(f'move: {move}')
-            
-            total_moves += 1
-            if move in env.get_locate_cold_moves(x, y, available):
-                total_op_moves += 1
-            
-            # PLAY THE MOVE
-            (x, y, board, available), reward, done, _ = env.step(move)
-            board = tuple(flatten_board(board))
-            steps += 1
-
-            # Log....
-            if debug:
-                print(">>> PLAYER move {}".format(move))
-
-            t_state.append(board)
-            t_move.append(move)
-            t_available.append(available)
-            t_move_i.append(move_i)
-            t_reward.append(reward)
-
-            if done:
-                player_win = True
+                    total_op_moves += 1
+                
+                # PLAY THE MOVE
+                (x, y, board, available), reward, done, _ = env.step(move)
+                board = tuple(flatten_board(board))
+                steps += 1
+    
+                # Log....
+                if debug:
+                    print(">>> PLAYER move {}".format(move))
+    
                 t_state.append(board)
                 t_move.append(move)
                 t_available.append(available)
                 t_move_i.append(move_i)
                 t_reward.append(reward)
-                # if stumb_top_moves > strat_top_moves: stumb_score += 1
-                # if strat_top_moves > stumb_top_moves: strat_score += 1
-                n_wins += 1
-                
+    
+                if done:
+                    player_win = True
+                    t_state.append(board)
+                    t_move.append(move)
+                    t_available.append(available)
+                    t_move_i.append(move_i)
+                    t_reward.append(reward)
+                    # if stumb_top_moves > strat_top_moves: stumb_score += 1
+                    # if strat_top_moves > stumb_top_moves: strat_score += 1
+                    n_wins += 1
+            
             # ----------------------------------------------------------------
             if not done:
                 # OPPONENT CHOOSES A MOVE
@@ -604,16 +612,23 @@ def wythoff_stumbler(num_episodes=10,
         # print()
         # quit()
         
+        # print(f'player_starts: {player_starts}')
+        
         # PLAYER (model)
-        s_idx = np.arange(0, steps - 1, 2)
+        if player_starts:
+            s_idx = np.arange(0, steps - 1, 2)
+        else:
+            s_idx = np.arange(1, steps - 1, 2)
         for i in s_idx:
+            # print(f'i: {i}')
             # States and actions
             s = t_state[i]
             next_s = t_state[i + 2]
             m_i = t_move_i[i]
 
             # Value and reward
-            Q = model[s][m_i]
+            Qint = model[s]
+            Q = Qint[m_i]
 
             try:
                 max_Q = model[next_s].max()
@@ -638,7 +653,10 @@ def wythoff_stumbler(num_episodes=10,
 
         # OPPONENT
         if not use_fixed_opponent:
-            s_idx = np.arange(1, steps - 1, 2)
+            if player_starts:
+                s_idx = np.arange(1, steps - 1, 2)
+            else:
+                s_idx = np.arange(0, steps - 1, 2)
             for i in s_idx:
                 # States and actions
                 s = t_state[i]
