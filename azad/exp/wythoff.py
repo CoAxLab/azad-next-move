@@ -109,7 +109,7 @@ def wythoff_stumbler_strategist(num_episodes=10,
                                 debug=False,
                                 strategy='imagination', # other option 'replay'
                                 use_fixed_opponent=True,
-                                fixed_opponent_tau=0.05): #0.55
+                                fixed_opponent_tau=0.55):
     """Learn Wythoff's with a stumbler-strategist network"""
 
     # -----------------------------------------------------------------------
@@ -367,7 +367,7 @@ def wythoff_stumbler(num_episodes=10,
                      seed=None,
                      strategy='imagination',
                      use_fixed_opponent=True,
-                     fixed_opponent_tau=0.05, #0.55
+                     fixed_opponent_tau=0.55,
                      total_wins=0,
                      total_losses=0,
                      total_op_moves=0,
@@ -574,7 +574,7 @@ def wythoff_stumbler(num_episodes=10,
                         opponent[board] = np.ones(len(available)) * default_Q
                         move_i = np.random.randint(0, len(available))
 
-                move = available[move_i]
+                move = available[move_i]                
 
                 # PLAY THE MOVE
                 (x, y, board, available), reward, done, _ = env.step(move)
@@ -614,6 +614,7 @@ def wythoff_stumbler(num_episodes=10,
         
         # print(f'player_starts: {player_starts}')
         
+        loss = np.nan
         # PLAYER (model)
         if player_starts:
             s_idx = np.arange(0, steps - 1, 2)

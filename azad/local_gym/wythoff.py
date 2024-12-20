@@ -26,18 +26,20 @@ def create_cold_board(m, n, default=0.0, cold_value=1):
     return cold_board
 
 
-def locate_all_cold_moves(m, n):
+def locate_all_cold_moves(x, y):
     """Locate all the cold moves"""
+    m = max(x, y)
+    n = max(x, y)
     moves = []
-    for k in range(m - 1):
+    for k in range(m): # - 1
         mk = int(k * golden)
         nk = int(k * golden**2)
-        if (nk < m) and (mk < n):
+        if (nk <= m) and (mk <= n):
             moves.append((mk, nk))
             moves.append((nk, mk))
     
-    if m == 0 or n == 0 or m==n:
-        moves.append((0, 0))
+    # if m == 0 or n == 0 or m==n:
+    #     moves.append((0, 0))
             
     return moves
 
