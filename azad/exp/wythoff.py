@@ -508,18 +508,16 @@ def wythoff_stumbler(num_episodes=10,
                     total_op_move_opportunities += 1
                     # print('cold move available')
                     if move in env.get_locate_cold_moves(x, y, available):
+                        total_op_moves += 1
                         # print('move is optimal')
                         best = 1.0
                     score += (best - score) / (total_op_move_opportunities)
                     # print(f'best: {best}')
                     # print(f'total_moves: {total_moves}')
                     # print(f'score: {score}')
-                
-                # print(f'move: {move}')
-                
                 total_moves += 1
-                if move in env.get_locate_cold_moves(x, y, available):
-                    total_op_moves += 1
+                # print(f'move: {move}')
+                    
                 
                 # PLAY THE MOVE
                 (x, y, board, available), reward, done, _ = env.step(move)
