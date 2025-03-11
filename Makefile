@@ -312,7 +312,7 @@ wythoff_exp13:
 		--joblog '$(DATA_PATH)/wythoff/exp13/exp13.parallel.log' \
 		--nice 19 --delay 2 \
 		"run_azad.py wythoff_stumbler --save=$(DATA_PATH)/wythoff/exp13/run_{1} --monitor='('episode', 'loss', 'score', 'total_wins', 'total_losses', 'total_reward', 'total_op_moves', 'total_moves', 'total_op_move_opportunities')' --num_episodes=20000 --update_every=10 --learning_rate=0.4 --epsilon=0.4 --gamma=0.5 --game=Wythoff15x15 --debug=False --anneal=True --return_none=True --save_model=True --seed={1}" ::: \
-		{1..100}
+		{101..200}
 
 # SS
 # Result: compared to exp13, the SS strongly accelerated learning of optimal play

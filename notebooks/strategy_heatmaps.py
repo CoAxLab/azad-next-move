@@ -118,23 +118,25 @@ def create_bias_board(m, n, strategist_model, default=0.0):
 
 
 def plot_wythoff_board(board,
-                       vmin=-1.5,
-                       vmax=1.5,
+                       vmin= -1, #-1.5,
+                       vmax=  1, #1.5,
                        plot=False,
                        path=None,
                        height=2,
                        width=3,
+                       cbar=False,
                        name='wythoff_board.png'):
     """Plot the board"""
 
     fig, ax = plt.subplots(figsize=(width, height))  # Sample figsize in inches
-    ax.imshow(board, cmap='bwr', vmin=vmin, vmax=vmax)
+    im = ax.imshow(board, cmap='bwr', vmin=vmin, vmax=vmax)
     # ax = sns.heatmap(board,
     #                  linewidths=3,
     #                  center=0,
     #                  vmin=vmin,
     #                  vmax=vmax,
     #                  ax=ax)
+    if cbar: fig.colorbar(im) #, orientation='horizontal', pad=0.1)
 
     # Save an image?
     if path is not None:
@@ -182,9 +184,9 @@ for run in range(100):
     rep_vals = create_bias_board(50, 50, recaller).numpy()
     rep_vals_sum += rep_vals
 
-plot_wythoff_board(ctr_vals_sum / 100, plot=True)#,
+plot_wythoff_board(ctr_vals_sum / 100, plot=True, height=5, width=1.5)#,
                        # path=tensorboard,
                        # name='player_max_values.png')
-plot_wythoff_board(img_vals_sum / 100, plot=True)
-plot_wythoff_board(rep_vals_sum / 100, plot=True)
-plot_wythoff_board((img_vals_sum - rep_vals_sum) / 100, plot=True)
+plot_wythoff_board(0 - (img_vals_sum / 100), plot=True, height=5, width=5)
+plot_wythoff_board(0 - (rep_vals_sum / 100), plot=True, height=5, width=5)
+plot_wythoff_board(0 - ((img_vals_sum - rep_vals_sum) / 100), plot=True, height=3, width=3, cbar=True)
