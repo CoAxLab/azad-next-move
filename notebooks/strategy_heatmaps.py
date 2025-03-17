@@ -3,6 +3,8 @@ import torch.nn as nn
 import torch.nn.functional as F
 import numpy as np
 import matplotlib.pyplot as plt
+from scipy.constants import golden
+from scipy.spatial import distance
 
 
 
@@ -190,3 +192,57 @@ plot_wythoff_board(ctr_vals_sum / 100, plot=True, height=5, width=1.5)#,
 plot_wythoff_board(0 - (img_vals_sum / 100), plot=True, height=5, width=5)
 plot_wythoff_board(0 - (rep_vals_sum / 100), plot=True, height=5, width=5)
 plot_wythoff_board(0 - ((img_vals_sum - rep_vals_sum) / 100), plot=True, height=3, width=3, cbar=True)
+
+
+
+def create_cold_board(m, n, default=0.0, cold_value=1):
+    """Create a (m, n) binary board with cold moves as '1'"""
+    cold_board = np.ones((m, n)) * default
+    for k in range(m - 1):
+        mk = int(k * golden)
+        nk = int(k * golden**2)
+        if (nk < m) and (mk < n):
+            cold_board[mk, nk] = cold_value
+            cold_board[nk, mk] = cold_value
+
+    return cold_board
+
+cold_board_50x50 = create_cold_board(50, 50, default=-1, cold_value=1)
+
+# print(cold_board_50x50[:5,:5])
+# print(np.array(img_vals_sum/100)[:5,:5])
+# print(np.array(rep_vals_sum/100)[:5,:5])
+print()
+print(distance.cosine(np.array(cold_board_50x50)[:15,:15].flatten(), np.array(img_vals_sum / 100)[:15,:15].flatten()))
+print(distance.cosine(np.array(cold_board_50x50)[:15,:15].flatten(), np.array(rep_vals_sum / 100)[:15,:15].flatten()))
+print()
+
+cold_board_50x50 = create_cold_board(50, 50, default=0, cold_value=1)
+# print(np.array(img_vals_sum/100)[:5,:5][cold_board_50x50[:5,:5].astype(bool)])
+
+
+def avg_val_at_op_moves_by_board_size(vals, cold_board, size):
+    return np.mean(np.array(vals)[:size,:size][cold_board[:size,:size].astype(bool)])
+
+avg_val_by_board_size_img = []
+avg_val_by_board_size_rep = []
+
+for size in range(1, 51):
+    avg_val_by_board_size_img.append(avg_val_at_op_moves_by_board_size(img_vals_sum / 100, cold_board_50x50, size))
+    avg_val_by_board_size_rep.append(avg_val_at_op_moves_by_board_size(rep_vals_sum / 100, cold_board_50x50, size))
+
+print(avg_val_by_board_size_img)
+print(avg_val_by_board_size_rep)
+
+fig, ax = plt.subplots()
+plt.plot(avg_val_by_board_size_img, label='imagination')
+plt.plot(avg_val_by_board_size_rep, label='replay')
+plt.title('Average strategist value at optimal moves by board size')
+plt.xlabel('Board size')
+plt.ylabel('Mean strategist value at optimal moves')
+plt.legend(title='agent')
+plt.show()
+
+
+
+
