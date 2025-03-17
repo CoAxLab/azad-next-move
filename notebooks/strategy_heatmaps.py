@@ -159,7 +159,10 @@ ctr_vals_sum = np.zeros((15,15))
 img_vals_sum = np.zeros((50,50))
 rep_vals_sum = np.zeros((50,50))
 
-for run in range(100):
+img_vals_list = []
+rep_vals_list = []
+
+for run in range(200):
     ctr_file = ctr_path + f'run_{run+1}.pytorch'
     img_file = img_path + f'run_{run+1}.pytorch'
     rep_file = rep_path + f'run_{run+1}.pytorch'
@@ -177,6 +180,7 @@ for run in range(100):
     strategist = load_strategist(strategist, img_file)
     img_vals = create_bias_board(50, 50, strategist).numpy()
     img_vals_sum += img_vals
+    img_vals_list.append(img_vals)
 
     state = th.load(img_file)
     num_hidden1 = state["num_hidden1"]
@@ -185,12 +189,13 @@ for run in range(100):
     recaller = load_strategist(recaller, rep_file)
     rep_vals = create_bias_board(50, 50, recaller).numpy()
     rep_vals_sum += rep_vals
+    rep_vals_list.append(rep_vals)
 
-plot_wythoff_board(ctr_vals_sum / 100, plot=True, height=5, width=1.5)#,
+plot_wythoff_board(ctr_vals_sum / 200, plot=True, height=5, width=1.5)#,
                        # path=tensorboard,
                        # name='player_max_values.png')
-plot_wythoff_board(0 - (img_vals_sum / 100), plot=True, height=5, width=5)
-plot_wythoff_board(0 - (rep_vals_sum / 100), plot=True, height=5, width=5)
+plot_wythoff_board(0 - (img_vals_sum / 200), plot=True, height=5, width=5)
+plot_wythoff_board(0 - (rep_vals_sum / 200), plot=True, height=5, width=5)
 plot_wythoff_board(0 - ((img_vals_sum - rep_vals_sum) / 100), plot=True, height=3, width=3, cbar=True)
 
 
@@ -213,8 +218,8 @@ cold_board_50x50 = create_cold_board(50, 50, default=-1, cold_value=1)
 # print(np.array(img_vals_sum/100)[:5,:5])
 # print(np.array(rep_vals_sum/100)[:5,:5])
 print()
-print(distance.cosine(np.array(cold_board_50x50)[:15,:15].flatten(), np.array(img_vals_sum / 100)[:15,:15].flatten()))
-print(distance.cosine(np.array(cold_board_50x50)[:15,:15].flatten(), np.array(rep_vals_sum / 100)[:15,:15].flatten()))
+print(distance.cosine(np.array(cold_board_50x50)[:15,:15].flatten(), np.array(img_vals_sum / 200)[:15,:15].flatten()))
+print(distance.cosine(np.array(cold_board_50x50)[:15,:15].flatten(), np.array(rep_vals_sum / 200)[:15,:15].flatten()))
 print()
 
 cold_board_50x50 = create_cold_board(50, 50, default=0, cold_value=1)
@@ -226,21 +231,37 @@ def avg_val_at_op_moves_by_board_size(vals, cold_board, size):
 
 avg_val_by_board_size_img = []
 avg_val_by_board_size_rep = []
+SEs_img = []
+SEs_rep = []
 
 for size in range(1, 51):
-    avg_val_by_board_size_img.append(avg_val_at_op_moves_by_board_size(img_vals_sum / 100, cold_board_50x50, size))
-    avg_val_by_board_size_rep.append(avg_val_at_op_moves_by_board_size(rep_vals_sum / 100, cold_board_50x50, size))
+    avg_val_by_board_size_img.append(avg_val_at_op_moves_by_board_size(img_vals_sum / 200, cold_board_50x50, size))
+    avg_val_by_board_size_rep.append(avg_val_at_op_moves_by_board_size(rep_vals_sum / 200, cold_board_50x50, size))
+    
+    run_avg_val_by_board_size_img = []
+    run_avg_val_by_board_size_rep = []
+    for run in range(200):
+        run_avg_val_by_board_size_img.append(avg_val_at_op_moves_by_board_size(img_vals_list[run], cold_board_50x50, size))
+        run_avg_val_by_board_size_rep.append(avg_val_at_op_moves_by_board_size(rep_vals_list[run], cold_board_50x50, size))
+    
+    SEs_img.append(np.std(run_avg_val_by_board_size_img) / np.sqrt(len(run_avg_val_by_board_size_img)))
+    SEs_rep.append(np.std(run_avg_val_by_board_size_rep) / np.sqrt(len(run_avg_val_by_board_size_rep)))
 
 print(avg_val_by_board_size_img)
 print(avg_val_by_board_size_rep)
 
+SEs_img = np.array(SEs_img)
+SEs_rep = np.array(SEs_rep)
+
 fig, ax = plt.subplots()
-plt.plot(avg_val_by_board_size_img, label='imagination')
-plt.plot(avg_val_by_board_size_rep, label='replay')
+plt.fill_between(np.arange(1, 51), avg_val_by_board_size_img + SEs_img, avg_val_by_board_size_img - SEs_img, color='plum',       alpha=0.25)
+plt.fill_between(np.arange(1, 51), avg_val_by_board_size_rep + SEs_rep, avg_val_by_board_size_rep - SEs_rep, color='sandybrown', alpha=0.25)
+plt.plot(np.arange(1, 51), avg_val_by_board_size_img, label='imagination', color='plum')
+plt.plot(np.arange(1, 51), avg_val_by_board_size_rep, label='replay',      color='sandybrown')
 plt.title('Average strategist value at optimal moves by board size')
-plt.xlabel('Board size')
-plt.ylabel('Mean strategist value at optimal moves')
-plt.legend(title='agent')
+plt.xlabel('Board size (edge length of square grid)')
+plt.ylabel('Mean strategist value at optimal (cold) moves')
+plt.legend(title='Strategist')
 plt.show()
 
 
